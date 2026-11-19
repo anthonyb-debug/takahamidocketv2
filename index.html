@@ -1,1 +1,3478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>
+(function () {
+  try {
+    var saved = localStorage.getItem("docket.theme");
+    var theme = (saved === "dark" || saved === "light")
+      ? saved
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {
+    // localStorage unavailable -- just leave the default (light) theme.
+  }
+})();
+</script>
+<title>Docket</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%231e3a5f%22/%3E%3Cg transform=%22translate%281.06 1.9%29 scale%281.15%29%22%3E%3Cpath d=%22M5.5 2h8.25L18 6.25V19a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z%22 fill=%22%23fff%22/%3E%3Cpath d=%22M13.75 2v4.25H18z%22 fill=%22%23c3cedc%22/%3E%3Cpath d=%22M6.75 9.5h7M6.75 13h4.5%22 stroke=%22%231e3a5f%22 stroke-width=%221.7%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%2217.25%22 cy=%2217.25%22 r=%225.25%22 fill=%22%23c98a2e%22 stroke=%22%231e3a5f%22 stroke-width=%221.5%22/%3E%3Cpath d=%22M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z%22 fill=%22%23fff%22 transform=%22translate%2814.25 14.25%29 scale%28.25%29%22/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/png;base64,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" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --bg: #f4f5f7;
+  --page-max: 560px;
+  --panel: #ffffff;
+  --ink: #10182b;
+  --ink-soft: #64748b;
+  --teal: #1e3a5f;
+  --teal-dark: #142b45;
+  --teal-tint: #e7ecf2;
+  --amber: #9c6b23;
+  --amber-dark: #7e5619;
+  --amber-tint: #f3e9da;
+  --success: #15803d;
+  --success-tint: #e3f3e8;
+  --danger: #b42318;
+  --danger-tint: #f6e2e2;
+  --border: #e2e5ea;
+  --terminal-bg: #101826;
+  --terminal-fg: #d7dee8;
+  --terminal-dim: #7c8aa0;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 14px rgba(16, 24, 40, 0.06);
+  --page-shadow: 0 20px 60px rgba(11, 40, 40, 0.12);
+  --input-bg: #fbfcfb;
+  --input-disabled-bg: #eef1f0;
+  --chip-bg: #e2e7e5;
+  --chip-hover-bg: #d3dad8;
+  --code-block-bg: #f7f9f8;
+  --scrollbar-thumb: #d3dad8;
+  /* Solid button fill needs its own tokens, separate from --teal/--teal-dark
+     (used as text/icon/border elsewhere) -- a color bright enough to read
+     well as text on a dark background is, by definition, too close to white
+     to still give white button text enough contrast. Verified against WCAG
+     AA (4.5:1) for both roles; see the dark-theme block below for the
+     numbers that actually needed this split. */
+  --btn-primary-bg: #1e3a5f;
+  --btn-primary-hover-bg: #142b45;
+}
 
+/* ---------- Dark theme ----------
+   Deliberately not an inversion: backgrounds are a soft dark navy-charcoal
+   (never pure black), text is an off-white (never pure white) to keep
+   contrast comfortable rather than harsh, and every accent color is
+   re-picked to stay legible against dark surfaces rather than mechanically
+   flipped. The header gradient and CMD preview stay the same in both
+   themes -- they're deliberately dark "branded" surfaces either way.
+
+   Every text/background pairing below has been checked against WCAG AA
+   (4.5:1 for normal text, 3:1 for large text/UI components) using the
+   standard relative-luminance formula -- not just eyeballed. --teal here is
+   brightened specifically so it clears 4.5:1 as text against --bg, --panel,
+   AND --teal-tint at once (a single shade that satisfies all three); the
+   separate --btn-primary-* tokens exist because that same brightness would
+   fail as a background behind white button text (a brighter color is, by
+   definition, closer to white -- the two needs pull in opposite
+   directions), so solid button fills use their own, deliberately less
+   bright, verified-for-white-text value instead. */
+[data-theme="dark"] {
+  --bg: #0f151d;
+  --panel: #182029;
+  --ink: #dfe3ea;
+  --ink-soft: #8a94a6;
+  --teal: #529adf;
+  --teal-dark: #529adf;
+  --teal-tint: #1c2c3f;
+  --amber: #d9a24f;
+  --amber-dark: #c78934;
+  --amber-tint: #33291a;
+  --success: #4ade80;
+  --success-tint: #16301f;
+  --danger: #f87171;
+  --danger-tint: #3a1f1f;
+  --border: #2a323d;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.45);
+  --page-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --input-bg: #12181f;
+  --input-disabled-bg: #1b222b;
+  --chip-bg: #232c37;
+  --chip-hover-bg: #2c3644;
+  --code-block-bg: #10151c;
+  --scrollbar-thumb: #333e4a;
+  --btn-primary-bg: #2f65a3;
+  --btn-primary-hover-bg: #255280;
+}
+
+* { box-sizing: border-box; }
+
+body, .tab-section, .agents-panel-inner, .modal-card, .signin-gate-card,
+input, textarea, select, .agent-card, .completed-entry, .mylog-entry,
+.claim-gate, .field-clear-btn, .date-icon-btn {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: var(--page-max);
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+@media (min-width: 640px) {
+  .page {
+    min-height: calc(100vh - 32px);
+    margin: 16px 0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--page-shadow);
+  }
+}
+
+/* ---------- Agents panel (shared, right side on wide screens) ---------- */
+.agents-panel {
+  width: 100%;
+  max-width: var(--page-max);
+}
+@media (min-width: 640px) {
+  .agents-panel { margin: 16px 0; }
+}
+@media (min-width: 980px) {
+  .agents-panel { max-width: 300px; }
+}
+.agents-panel-inner {
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+@media (min-width: 980px) {
+  .agents-panel-inner { position: sticky; top: 16px; }
+}
+.agents-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.agents-panel-header h2 {
+  font-size: 13px;
+  margin: 0;
+  color: var(--teal-dark);
+}
+.agents-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#agentsLastSync {
+  opacity: 0.6;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.agent-identity { margin-bottom: 8px; min-height: 34px; }
+
+/* ---------- Sign-in gate (split screen, blocks the app until signed in) ---------- */
+.signin-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  background: var(--panel);
+  overflow-y: auto;
+  font-size: 14px;
+}
+.signin-gate[hidden] { display: none; }
+
+/* Brand side -- stays navy in both themes, like the app header */
+.gate-aside {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  flex: 0 0 46%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 44px 56px;
+  background: linear-gradient(155deg, #0a1d30 0%, #16304f 55%, #2b4d78 100%);
+  color: #e3e9f1;
+}
+.gate-sheet {
+  /* oversized docket sheet, echoing the app's clipboard mark */
+  position: absolute;
+  z-index: -1;
+  right: -190px;
+  bottom: -250px;
+  width: 520px;
+  height: auto;
+  color: #ffffff;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.gate-brand { display: flex; align-items: center; gap: 12px; }
+.gate-brand-mark {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.gate-brand-mark svg { width: 24px; height: 24px; }
+.gate-brand-name { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.1; letter-spacing: -0.01em; }
+.gate-brand-org { font-size: 12px; color: rgba(227, 233, 241, 0.62); margin-top: 3px; }
+
+.gate-pitch { max-width: 430px; }
+.gate-pitch h2 {
+  font-size: clamp(28px, 2.6vw, 36px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 14px;
+  color: #fff;
+}
+.gate-pitch > p { font-size: 15px; line-height: 1.6; margin: 0; color: rgba(227, 233, 241, 0.72); }
+.gate-points { list-style: none; margin: 34px 0 0; padding: 0; display: grid; gap: 18px; }
+.gate-points li { display: grid; grid-template-columns: 36px 1fr; gap: 14px; align-items: start; }
+.gate-pt-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: rgba(217, 162, 79, 0.13);
+  color: #e2b36b;
+  box-shadow: inset 0 0 0 1px rgba(226, 179, 107, 0.22);
+}
+.gate-pt-icon svg { width: 17px; height: 17px; }
+.gate-points strong { display: block; font-size: 14px; font-weight: 600; color: #fff; margin-top: 1px; }
+.gate-points span { display: block; font-size: 13px; line-height: 1.5; color: rgba(227, 233, 241, 0.62); margin-top: 2px; }
+.gate-aside-foot { font-size: 12px; color: rgba(227, 233, 241, 0.5); }
+
+/* Form side -- follows the light/dark theme */
+.gate-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px;
+  background: var(--panel);
+}
+.gate-main-top { display: flex; justify-content: flex-end; }
+.gate-form-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 0; }
+.signin-gate-card { width: 100%; max-width: 360px; }
+.gate-mobile-brand { display: none; }
+.signin-gate-card h1 { font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; margin: 0; color: var(--ink); }
+.signin-gate-card .gate-sub { font-size: 14px; line-height: 1.55; color: var(--ink-soft); margin: 10px 0 0; }
+.signin-gate-btn { display: flex; justify-content: flex-start; margin-top: 30px; min-height: 44px; }
+#signInGateHint {
+  display: block;
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 500;
+  opacity: 1;
+}
+#signInGateHint:empty { display: none; }
+#signInGateHint.err {
+  padding: 11px 13px;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--danger-tint);
+  box-shadow: inset 3px 0 0 var(--danger);
+}
+.gate-divider { height: 1px; background: var(--border); margin: 30px 0 18px; }
+.gate-note { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
+.gate-note + .gate-note { margin-top: 12px; }
+.gate-note svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+.gate-main-foot { font-size: 12px; color: var(--ink-soft); text-align: center; }
+
+.theme-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.theme-toggle-btn:hover { background: var(--teal-tint); color: var(--teal); border-color: var(--teal-tint); }
+.theme-toggle-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+.signin-gate-card { animation: gate-in 0.45s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes gate-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .signin-gate-card { animation: none; } }
+
+@media (max-width: 1100px) {
+  .gate-aside { flex-basis: 42%; padding: 40px 40px; }
+}
+@media (max-width: 860px) {
+  .gate-aside { display: none; }
+  .gate-main { padding: 16px 20px 20px; }
+  .gate-form-wrap { align-items: flex-start; padding: 12px 0 32px; }
+  .gate-mobile-brand {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 28px; padding: 14px 16px; border-radius: 12px;
+    background: linear-gradient(135deg, #0a1d30 0%, #1e3a5f 55%, #2b4d78 100%);
+  }
+  .gate-mobile-brand .gate-brand-mark { width: 34px; height: 34px; border-radius: 8px; }
+  .gate-mobile-brand .gate-brand-mark svg { width: 18px; height: 18px; }
+  .gate-mobile-brand .gate-brand-name { font-size: 16px; }
+}
+.agent-signed-in {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.agent-signed-in[hidden] { display: none; }
+.agent-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: block;
+}
+.agent-signed-in-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.agent-signed-in-text strong {
+  font-size: 12px;
+  color: var(--ink);
+}
+.agent-card {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+}
+.agent-card.agent-card-you {
+  border-color: var(--teal);
+  background: var(--teal-tint);
+}
+.agent-card .ac-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.agent-card .ac-timer {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-weight: 700;
+  color: var(--success);
+  white-space: nowrap;
+}
+.agent-card .ac-meta { color: var(--ink-soft); margin-top: 1px; }
+
+.completed-header { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.completed-agent-filter {
+  width: auto;
+  padding: 3px 6px;
+  font-size: 10.5px;
+  border-radius: 5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.pin-input {
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 10px;
+  font-weight: 700;
+  padding: 10px 8px;
+  margin-bottom: 8px;
+}
+.completed-list { max-height: 40vh; }
+.completed-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+}
+.completed-entry .ce-check {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--success-tint);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.completed-entry .ce-body { min-width: 0; }
+.completed-entry .ce-patient {
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.completed-entry .ce-meta {
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+.completed-entry .ce-duration {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-weight: 700;
+  color: var(--success);
+}
+
+/* ---------- Modal (used by View My Log) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 25, 25, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 40;
+}
+.modal[hidden] { display: none; }
+.modal-card {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 14px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+.mylog-modal-card {
+  max-width: 560px;
+  max-height: 90vh;
+  padding: 18px;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+.modal-header h2 { font-size: 15px; margin: 0; color: var(--ink); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 3px; }
+
+.confirm-modal-card { max-width: 340px; }
+.confirm-modal-message {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.mylog-subtitle { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 8px; line-height: 1.45; }
+.mylog-list { max-height: 70vh; }
+.mylog-entry {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mylog-entry-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--ink);
+}
+.mylog-entry-when {
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.mylog-entry-body {
+  margin: 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink);
+  background: var(--code-block-bg);
+  border-radius: 6px;
+  padding: 8px;
+}
+.mylog-copy-btn { align-self: flex-end; padding: 5px 10px; font-size: 11.5px; }
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 11px 14px;
+  background: linear-gradient(135deg, #0a1d30 0%, #1e3a5f 55%, #2b4d78 100%);
+  color: #fff;
+  flex: 0 0 auto;
+}
+.brand { display: flex; align-items: center; gap: 9px; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.brand-mark svg { width: 19px; height: 19px; }
+.brand-text .eyebrow { margin: 0; color: rgba(255, 255, 255, 0.68); }
+.brand-text h1 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: 0.1px; color: #fff; }
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.85);
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  flex: 0 0 auto;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, 0.2); color: #fff; border-color: rgba(255, 255, 255, 0.32); }
+.topbar-actions { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+
+.eyebrow {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 0 0 5px;
+  display: flex;
+  align-items: center;
+}
+.section-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  flex: 0 0 auto;
+}
+.section-dot-navy { background: var(--teal); }
+.section-dot-gold { background: var(--amber); }
+
+/* ---------- Live clock (Eastern time) ---------- */
+.live-clock {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 14px;
+  background: var(--teal-tint);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal-dark);
+}
+.live-clock-sep { opacity: 0.5; }
+#liveClockTime {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.live-clock-tz {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Status bar ---------- */
+.status-bar {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.status-bar.ok { background: var(--success-tint); color: var(--success); }
+.status-bar.err { background: var(--danger-tint); color: var(--danger); }
+.status-bar.info { background: var(--teal-tint); color: var(--teal-dark); }
+
+/* ---------- Scroll area ---------- */
+.form-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg);
+}
+
+/* ---------- Tab sections (folder-tab motif) ---------- */
+.tab-section {
+  display: flex;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.tab-strip { display: none; }
+.section-inner { padding: 12px 14px 14px; flex: 1; min-width: 0; }
+
+.field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+.field:last-child { margin-bottom: 0; }
+.field > span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field-row { display: flex; gap: 8px; }
+.field-row .field { flex: 1; min-width: 0; }
+
+/* ---------- CMD blocks (one or more claims per section) ---------- */
+.cmd-block + .cmd-block {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+.cmd-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.cmd-block-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.cmd-block-remove-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+.cmd-block-remove-btn:hover { background: var(--danger-tint); }
+.cmd-block-remove-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.add-cmd-block-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--teal-dark);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+[data-theme="dark"] .add-cmd-block-btn { color: var(--teal); }
+.add-cmd-block-btn:hover { background: var(--teal-tint); }
+.add-cmd-block-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--teal);
+  background: var(--panel);
+  box-shadow: 0 0 0 3px var(--teal-tint);
+}
+
+.field-input-wrap { position: relative; }
+.field-input-wrap input,
+.field-input-wrap textarea {
+  width: 100%;
+  padding-right: 26px; /* room for the clear button inside the box */
+}
+.field-clear-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--chip-bg);
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.field-clear-btn:hover { background: var(--chip-hover-bg); color: var(--ink); }
+.field-clear-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.field-input-wrap-textarea .field-clear-btn {
+  top: 8px;
+  transform: none;
+}
+
+/* Date-picker helper (DOB, CMD Date) -- text field stays free-text/paste
+   friendly; this just adds a calendar button that opens a native picker and
+   writes a formatted date into the field when used. */
+.field-input-wrap-has-date input {
+  padding-right: 50px; /* room for the calendar icon + the clear button */
+}
+.date-field-wrap {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+}
+.date-icon-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.date-icon-btn:hover { background: var(--teal-tint); color: var(--teal); }
+.date-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; background: transparent; color: var(--ink-soft); }
+/* Rendered (not display:none, showPicker() requires that) but tucked away
+   and non-interactive -- the button above is the only thing agents click. */
+.date-picker-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Avoid the native spinner arrows colliding with the clear button on the
+   "# of Claims" number input. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+.cmd-block select[data-field="actionTemplateSelect"] {
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.cmd-block textarea[data-field="action"] {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.mini-link {
+  background: none;
+  border: none;
+  color: var(--amber-dark);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: none;
+  cursor: pointer;
+  padding: 0;
+}
+.mini-link:hover { text-decoration: underline; }
+
+.mini-hint {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: none;
+  opacity: 0.75;
+}
+.mini-hint.err {
+  color: var(--danger);
+  opacity: 1;
+}
+
+/* ---------- Claim gate / timer ---------- */
+.claim-gate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: var(--teal-tint);
+  margin-bottom: 10px;
+}
+.claim-gate[hidden] { display: none; }
+.claim-gate-text { display: flex; flex-direction: column; gap: 1px; }
+.claim-gate-text strong { font-size: 12px; color: var(--teal-dark); }
+.claim-gate-text span { font-size: 10.5px; color: var(--ink-soft); }
+.claim-gate-active {
+  background: var(--success-tint);
+  justify-content: flex-start;
+  color: var(--success);
+}
+.claim-timer {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--success);
+}
+.claim-gate-label { font-size: 11px; color: var(--ink-soft); }
+
+/* ---------- Disabled/locked state ---------- */
+input:disabled, textarea:disabled, select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--input-disabled-bg);
+}
+.mini-link:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* ---------- Shared status/list utility styles (used by Agents Working) ---------- */
+.log-status {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.log-status.info { background: var(--teal-tint); color: var(--teal-dark); }
+.log-status.err { background: var(--danger-tint); color: var(--danger); }
+.logs-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 3px 0 8px;
+}
+.log-empty { font-size: 12px; color: var(--ink-soft); text-align: center; padding: 12px 0; }
+
+/* ---------- Terminal preview ---------- */
+.terminal-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid #0a1420;
+}
+.terminal-header {
+  background: #16233a;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--terminal-dim);
+}
+.terminal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.terminal-title {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--terminal-dim);
+  font-weight: 700;
+}
+.terminal-body {
+  margin: 0;
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 10px 12px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 48px;
+}
+
+/* ---------- Per-CMD-block preview + copy ---------- */
+.cmd-block-preview {
+  margin-top: 12px;
+}
+.cmd-block-copy-btn {
+  flex: 0 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.cmd-block-copy-btn:hover { background: rgba(255, 255, 255, 0.2); color: #fff; border-color: rgba(255, 255, 255, 0.32); }
+.cmd-block-copy-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.log-hint {
+  font-size: 11px;
+  color: var(--ink-soft);
+  text-align: center;
+  margin: -2px 0 0;
+  min-height: 13px;
+}
+.log-hint.log-hint-pending {
+  color: var(--amber-dark);
+  background: var(--amber-tint);
+  border-radius: 7px;
+  padding: 7px 10px;
+  margin: 0 12px;
+  line-height: 1.45;
+}
+
+/* ---------- Action bar ---------- */
+.action-bar {
+  flex: 0 0 auto;
+  padding: 10px 12px 12px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.05s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-amber {
+  background: var(--panel);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.btn-amber:hover { background: var(--teal-tint); }
+.btn-teal { background: var(--btn-primary-bg); color: #fff; }
+.btn-teal:hover { background: var(--btn-primary-hover-bg); }
+.btn-ghost { background: var(--bg); color: var(--ink-soft); border-color: var(--border); }
+.btn-ghost:hover { background: var(--border); color: var(--ink); }
+.btn:disabled { opacity: 0.55; cursor: default; }
+
+/* Scrollbar polish */
+.form-scroll::-webkit-scrollbar { width: 8px; }
+.form-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<div id="signInGate" class="signin-gate">
+  <aside class="gate-aside">
+    <svg class="gate-sheet" viewBox="0 0 200 240" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+      <rect x="20" y="24" width="160" height="208" rx="14"/>
+      <path d="M70 24V14a6 6 0 0 1 6-6h48a6 6 0 0 1 6 6v10a8 8 0 0 1-8 8H78a8 8 0 0 1-8-8z"/>
+      <path d="M48 76h104M48 104h104M48 132h72M48 160h88M48 188h56"/>
+    </svg>
+    <div class="gate-brand">
+        <div class="gate-brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.5 2h8.25L18 6.25V19a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff"/><path d="M13.75 2v4.25H18z" fill="#c3cedc"/><path d="M6.75 9.5h7M6.75 13h4.5" stroke="#1e3a5f" stroke-width="1.7" stroke-linecap="round"/><circle cx="17.25" cy="17.25" r="5.25" fill="#c98a2e" stroke="#223f63" stroke-width="1.5"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="#fff" transform="translate(14.25 14.25) scale(.25)"/></svg></div>
+        <div><div class="gate-brand-name">Docket</div><div class="gate-brand-org">Takahami Billing</div></div>
+    </div>
+    <div class="gate-pitch">
+      <h2>Work every TPA call claim from one sheet.</h2>
+      <p>Docket keeps the claim details, call note and timer together, so each claim is logged the same way.</p>
+      <ul class="gate-points">
+        <li>
+          <div class="gate-pt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M10 2h4"/></svg></div>
+          <div><strong>Start a claim, start the clock</strong><span>Time on each claim is tracked from the moment you open it.</span></div>
+        </li>
+        <li>
+          <div class="gate-pt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+          <div><strong>Call notes written for you</strong><span>The CMD template fills in as you enter the patient and claim info.</span></div>
+        </li>
+        <li>
+          <div class="gate-pt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><strong>See who's working what</strong><span>Agents Working and Completed Today update for the whole team.</span></div>
+        </li>
+      </ul>
+    </div>
+    <div class="gate-aside-foot">&copy; <span id="gateYear">2026</span> Takahami Billing</div>
+  </aside>
+
+  <main class="gate-main">
+    <div class="gate-main-top">
+      <button type="button" id="gateThemeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark mode"></button>
+    </div>
+    <div class="gate-form-wrap">
+      <div class="signin-gate-card">
+        <div class="gate-mobile-brand">
+        <div class="gate-brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.5 2h8.25L18 6.25V19a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff"/><path d="M13.75 2v4.25H18z" fill="#c3cedc"/><path d="M6.75 9.5h7M6.75 13h4.5" stroke="#1e3a5f" stroke-width="1.7" stroke-linecap="round"/><circle cx="17.25" cy="17.25" r="5.25" fill="#c98a2e" stroke="#223f63" stroke-width="1.5"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="#fff" transform="translate(14.25 14.25) scale(.25)"/></svg></div>
+        <div><div class="gate-brand-name">Docket</div><div class="gate-brand-org">Takahami Billing</div></div>
+        </div>
+        <h1>Sign in</h1>
+        <p class="gate-sub">Use your Google account to open Docket. Your name is what teammates see on the Agents Working panel.</p>
+        <div id="googleSignInGateBtn" class="signin-gate-btn"></div>
+        <p class="mini-hint" id="signInGateHint" role="alert"></p>
+        <div class="gate-divider"></div>
+        <div class="gate-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Your sign-in stays on this browser until you sign out.</span>
+        </div>
+        <div class="gate-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          <span>Can't sign in? Ask your manager to check your account access.</span>
+        </div>
+      </div>
+    </div>
+    <div class="gate-main-foot">Secured with Google sign-in</div>
+  </main>
+</div>
+
+<div class="app-shell">
+<div class="page">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5.5 2h8.25L18 6.25V19a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff"/><path d="M13.75 2v4.25H18z" fill="#c3cedc"/><path d="M6.75 9.5h7M6.75 13h4.5" stroke="#1e3a5f" stroke-width="1.7" stroke-linecap="round"/><circle cx="17.25" cy="17.25" r="5.25" fill="#c98a2e" stroke="#223f63" stroke-width="1.5"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="#fff" transform="translate(14.25 14.25) scale(.25)"/></svg>
+      </div>
+      <div class="brand-text">
+        <p class="eyebrow">TAKAHAMI BILLING</p>
+        <h1>Docket</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" id="headerThemeToggleBtn" class="icon-btn" aria-label="Toggle dark mode"></button>
+      <button id="myLogBtn" class="icon-btn" title="View my logged claims" aria-label="View My Log">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="liveClock" class="live-clock">
+    <span id="liveClockDate"></span>
+    <span class="live-clock-sep">&middot;</span>
+    <span id="liveClockTime"></span>
+    <span class="live-clock-tz">ET</span>
+  </div>
+
+  <div id="statusBar" class="status-bar" role="status" aria-live="polite" hidden></div>
+
+  <main class="form-scroll">
+
+    <section class="tab-section">
+      <div class="tab-strip" aria-hidden="true"></div>
+      <div class="section-inner">
+        <p class="eyebrow"><span class="section-dot section-dot-navy"></span>Patient / Claim Info</p>
+
+        <div id="claimGateStart" class="claim-gate">
+          <div class="claim-gate-text">
+            <strong>Start this claim to unlock the form</strong>
+            <span>Also starts a timer for time spent on this claim.</span>
+          </div>
+          <button type="button" id="startClaimBtn" class="btn btn-teal">Work on a Claim</button>
+        </div>
+
+        <div id="claimGateActive" class="claim-gate claim-gate-active" hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          <span id="claimTimerDisplay" class="claim-timer">00:00</span>
+          <span class="claim-gate-label">Working on this claim</span>
+        </div>
+
+        <label class="field">
+          <span>Patient Name</span>
+          <input type="text" id="patientName" placeholder="Last, First" autocomplete="off" />
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Facility</span>
+            <input type="text" id="facility" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>Carrier</span>
+            <input type="text" id="carrierTop" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>DOB</span>
+            <input type="text" id="dob" placeholder="MM/DD/YYYY" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>Member ID</span>
+            <input type="text" id="memberId" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>TIN</span>
+            <input type="text" id="tin" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>NPI</span>
+            <input type="text" id="npi" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>DOS</span>
+            <input type="text" id="dos" placeholder="MM/DD/YYYY or range" autocomplete="off" />
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-section">
+      <div class="tab-strip" aria-hidden="true"></div>
+      <div class="section-inner">
+        <p class="eyebrow"><span class="section-dot section-dot-gold"></span>CMD Template &middot; TPA Call</p>
+
+        <div id="cmdBlocksList"></div>
+
+        <button type="button" id="addCmdBlockBtn" class="add-cmd-block-btn">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+          Add another CMD template
+        </button>
+      </div>
+    </section>
+
+    <p class="log-hint" id="logHint"></p>
+
+  </main>
+
+  <footer class="action-bar">
+    <button id="endSessionBtn" class="btn btn-teal">End Session</button>
+  </footer>
+
+</div>
+
+<aside class="agents-panel">
+  <div class="agents-panel-inner">
+    <div class="agents-panel-header">
+      <h2>Agents Working</h2>
+      <span class="agents-header-actions">
+        <span id="agentsLastSync" class="mini-hint"></span>
+        <button type="button" id="refreshAgentsBtn" class="mini-link">refresh</button>
+      </span>
+    </div>
+
+    <div class="agent-identity">
+      <div id="agentSignedIn" class="agent-signed-in" hidden>
+        <img id="agentAvatar" class="agent-avatar" alt="" />
+        <div class="agent-signed-in-text">
+          <strong id="agentDisplayName"></strong>
+          <button type="button" id="agentSignOutBtn" class="mini-link">sign out</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="agentsStatus" class="log-status" hidden></div>
+    <div id="agentsList" class="logs-list"></div>
+
+    <div class="agents-panel-header completed-header">
+      <h2>Completed Today</h2>
+      <span class="agents-header-actions">
+        <select id="completedAgentFilter" class="completed-agent-filter" aria-label="Filter completed claims by agent">
+          <option value="">All agents</option>
+        </select>
+        <button type="button" id="clearCompletedBtn" class="mini-link" hidden>clear</button>
+      </span>
+    </div>
+    <div id="completedStatus" class="log-status" hidden></div>
+    <div id="completedList" class="logs-list completed-list"></div>
+  </div>
+</aside>
+
+</div>
+
+<div id="myLogModal" class="modal" hidden>
+  <div class="modal-card mylog-modal-card">
+    <div class="modal-header">
+      <h2>My Log</h2>
+      <button type="button" id="closeMyLogBtn" class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <p class="mylog-subtitle">Claims you've logged, most recent first. Copy any entry to paste into your own notes.</p>
+    <div id="myLogStatus" class="log-status" hidden></div>
+    <div id="myLogList" class="logs-list mylog-list"></div>
+    <div class="modal-actions">
+      <button type="button" id="refreshMyLogBtn" class="btn btn-ghost">Refresh</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal" hidden>
+  <div class="modal-card confirm-modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmModalMessage">
+    <p id="confirmModalMessage" class="confirm-modal-message"></p>
+    <div class="modal-actions" id="confirmModalActions"></div>
+  </div>
+</div>
+
+
+<script>
+
+// ---------- Hardcoded sheet connection ----------
+// Logs to: "Takahami Medical Billing -- Account Entries"
+// (https://docs.google.com/spreadsheets/d/13_GgCqU1Ey8PUj26AlHQWlrHlChw1uptL8dyO3Fh0bc)
+//
+// After deploying Apps_Script_Code.gs as a Web App (see README.md Part 1),
+// paste the resulting /exec URL below. Every agent using this page will log
+// to the same sheet -- no per-agent setup needed.
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx2UWHVh3w1EvZFdpIHv9F7PNJFGoeCEU__30ZmjskgbuUC8CipmN0Ny9w476wC6lgpUQ/exec";
+
+// ---------- Constants ----------
+const DRAFT_KEY = "tpaCallLog.draftV1";
+
+const ACTION_TEMPLATES = {
+  nego_appeal:
+    "Called INS to check if clm was priced externally - rep said no. Asked if APL can be filed for this clm due to being UP - rep confirmed clm is w/in their APL TFL of [TFL] days. Reqstd to have APL letter/form sent [via fax/by mail] to [Carrier], Attn: [Department] at [fax number/mailing address], (PT Signed AOR attached / reqstd AOR form be sent to PT for signature). Pls allow up to [TAT] days to process upon receipt but FFUP after 10 business days to check receipt status and acquire DCN.",
+  appeal_fu_mail:
+    "Called INS to check receipt status of APL sent by mail on [Outgoing Date] w/c shows delivered on [USPS Delivery Date] via the USPS portal w/ tracking# [USPS Tracking#] - rep confirms rcvd on [Receipt Date] w/ DCN [DCN]. [Resolution with TAT] but can FFUP again after 10 business days to check status.",
+  appeal_fu_fax:
+    "Called INS to check receipt status of APL sent via fax on [Outgoing Date] - rep confirms rcvd on [Receipt Date] w/ DCN [DCN]. [Resolution with TAT] but can FFUP again after 10 business days to check status.",
+  appeal_fu_escalation:
+    "Called INS to check status of APL escalated on [Date] w/ last Call Ref# [Enter Call Ref#] - rep reached out to the escalating rep to check status of escalation of APL Doc w/ DCN [Enter DCN] and said [Enter response if available]. [Enter Resolution].",
+  tpa_reopen:
+    "Called TPA to check if clm can be re-opened after an unsuccessful c-offer attempt of $[amt] from proposal amt of $[amt] on [date of c-offer] and was closed due to being declined on [decline date] - rep agreed to send the clm back to the processor as an SLR and said to allow 20-30 business days for review but can FFUP after 10 business days to check status.",
+  tpa_pricing_sheet:
+    "Called INS to confirm if pricing sheet from TPA was already rcvd after a successful Nego Amt of $[Nego Amt] signed on [Date Signed] - rep said no updated pricing sheet showing in their system. Called TPA to open a Pymt Status Inq - rep confirms Nego Inq closed on [Ask Date] as successful Nego. Rep agreed to open Inq and advsd to allow time to process but can FFUP after [TAT] days to check status.",
+  legacy_not_eligible_a:
+    "Contacted INS to check if clms are eligible for negotiations - rep said clms are not priced by any TPA and is not eligible for negotiations. endorsed clms to Judy for status change.",
+  legacy_not_eligible_b:
+    "Called INS to check if clm was priced externally - rep said clms are not priced by any TPA and is not eligible for negotiations. endorsed clms to Judy for status change."
+};
+
+// TPA Proposal actions involve two calls (INS + TPA), so show a guide for
+// what to enter in Rep & Ref# when one of those templates is chosen --
+// as placeholder text only, never inserted as real content that would need
+// to be erased or could get logged by mistake if left untouched.
+const TPA_PROPOSAL_KEYS = ["tpa_reopen", "tpa_pricing_sheet"];
+const TPA_PROPOSAL_REP_REF_HINT = "[INS Rep/Ref#] // [TPA Rep/Ref#]";
+const DEFAULT_REP_REF_PLACEHOLDER = "Rep name / callback ref #";
+
+// "Header" fields: one set per claim session, entered once.
+const HEADER_FIELD_IDS = [
+  "patientName", "facility", "carrierTop", "dob", "memberId", "tin", "npi", "dos"
+];
+
+// CMD Template fields: these repeat once per CMD block (one per TPA call /
+// claim). Each block's inputs are looked up by data-field, not id, so any
+// number of blocks can exist without id collisions.
+const CMD_FIELD_KEYS = ["cmdDate", "cmdCarrier", "tpa", "numClaims", "billedAmount", "originalAllowed", "action", "repRef"];
+
+const els = {};
+HEADER_FIELD_IDS.forEach((id) => (els[id] = document.getElementById(id)));
+
+// Wraps a field's input/textarea with a small "x" button that clears it.
+// Stores the button on the element itself (el.clearBtn) so both header
+// fields and per-block CMD fields can share this helper.
+function wrapWithClearButton(el) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "field-input-wrap" + (el.tagName === "TEXTAREA" ? " field-input-wrap-textarea" : "");
+  el.parentNode.insertBefore(wrapper, el);
+  wrapper.appendChild(el);
+
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "field-clear-btn";
+  clearBtn.setAttribute("aria-label", "Clear this field");
+  clearBtn.textContent = "\u00D7";
+  clearBtn.hidden = true;
+  wrapper.appendChild(clearBtn);
+  el.clearBtn = clearBtn;
+
+  clearBtn.addEventListener("click", () => {
+    el.value = "";
+    clearBtn.hidden = true;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.focus();
+  });
+
+  el.addEventListener("input", () => {
+    clearBtn.hidden = !el.value;
+  });
+
+  return clearBtn;
+}
+
+function addClearButtons() {
+  HEADER_FIELD_IDS.forEach((id) => wrapWithClearButton(els[id]));
+}
+addClearButtons();
+
+// Adds a small calendar button next to a text field that opens the
+// browser's native date picker via showPicker(). The visible field stays
+// plain text underneath, so typing or pasting anything (including non-date
+// text) still works fine -- picking a date is just a shortcut that fills
+// it in as MM/DD/YYYY. Stores refs on the element (el.datePicker /
+// el.dateIconBtn) so setFormEnabled() can find and lock them later.
+function addDatePickerTo(el) {
+  const wrap = el.parentNode; // the .field-input-wrap created by wrapWithClearButton()
+  if (!wrap) return;
+
+  wrap.classList.add("field-input-wrap-has-date");
+
+  const dateBox = document.createElement("span");
+  dateBox.className = "date-field-wrap";
+
+  const iconBtn = document.createElement("button");
+  iconBtn.type = "button";
+  iconBtn.className = "date-icon-btn";
+  iconBtn.setAttribute("aria-label", "Pick a date");
+  iconBtn.innerHTML =
+    '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4"></path><path d="M8 3v4"></path><path d="M3 10h18"></path></svg>';
+
+  // Kept off-screen but still rendered (not display:none) -- showPicker()
+  // requires that -- and not directly interactive; the button above is the
+  // only thing agents click. This just supplies the native picker + value.
+  const picker = document.createElement("input");
+  picker.type = "date";
+  picker.className = "date-picker-overlay";
+  picker.tabIndex = -1;
+  picker.setAttribute("aria-hidden", "true");
+
+  dateBox.appendChild(iconBtn);
+  dateBox.appendChild(picker);
+
+  // Sits just left of the clear button, which is always the wrapper's last child.
+  wrap.insertBefore(dateBox, wrap.lastElementChild);
+  el.datePicker = picker;
+  el.dateIconBtn = iconBtn;
+
+  iconBtn.addEventListener("click", () => {
+    if (typeof picker.showPicker === "function") {
+      try {
+        picker.showPicker();
+        return;
+      } catch (err) {
+        // fall through to the focus/click fallback below
+      }
+    }
+    picker.focus();
+    picker.click();
+  });
+
+  picker.addEventListener("change", () => {
+    if (!picker.value) return;
+    const [y, m, d] = picker.value.split("-");
+    el.value = `${m}/${d}/${y}`;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    picker.value = "";
+  });
+}
+
+addDatePickerTo(els.dob);
+
+// Call this after any programmatic (non-typed) value change -- draft
+// restore, template auto-fill, "use above", form clear on End Session --
+// since those don't fire an "input" event on their own.
+function syncAllClearButtons() {
+  HEADER_FIELD_IDS.forEach((id) => {
+    const el = els[id];
+    if (el.clearBtn) el.clearBtn.hidden = !el.value;
+  });
+  cmdBlocks.forEach((block) => {
+    CMD_FIELD_KEYS.forEach((key) => {
+      const el = block.els[key];
+      if (el.clearBtn) el.clearBtn.hidden = !el.value;
+    });
+  });
+}
+
+const statusBar = document.getElementById("statusBar");
+const logHint = document.getElementById("logHint");
+
+const endSessionBtn = document.getElementById("endSessionBtn");
+
+const cmdBlocksList = document.getElementById("cmdBlocksList");
+const addCmdBlockBtn = document.getElementById("addCmdBlockBtn");
+
+const claimGateStart = document.getElementById("claimGateStart");
+const claimGateActive = document.getElementById("claimGateActive");
+const claimTimerDisplay = document.getElementById("claimTimerDisplay");
+const startClaimBtn = document.getElementById("startClaimBtn");
+
+const signInGate = document.getElementById("signInGate");
+const signInGateHint = document.getElementById("signInGateHint");
+const agentSignedIn = document.getElementById("agentSignedIn");
+const agentAvatar = document.getElementById("agentAvatar");
+const agentDisplayName = document.getElementById("agentDisplayName");
+const agentSignOutBtn = document.getElementById("agentSignOutBtn");
+const refreshAgentsBtn = document.getElementById("refreshAgentsBtn");
+const agentsList = document.getElementById("agentsList");
+const agentsStatus = document.getElementById("agentsStatus");
+const agentsLastSync = document.getElementById("agentsLastSync");
+const completedStatus = document.getElementById("completedStatus");
+const completedList = document.getElementById("completedList");
+const completedAgentFilter = document.getElementById("completedAgentFilter");
+const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+
+const myLogBtn = document.getElementById("myLogBtn");
+const myLogModal = document.getElementById("myLogModal");
+const closeMyLogBtn = document.getElementById("closeMyLogBtn");
+const refreshMyLogBtn = document.getElementById("refreshMyLogBtn");
+const myLogList = document.getElementById("myLogList");
+const myLogStatus = document.getElementById("myLogStatus");
+
+const confirmModal = document.getElementById("confirmModal");
+const confirmModalMessage = document.getElementById("confirmModalMessage");
+const confirmModalActions = document.getElementById("confirmModalActions");
+
+// ---------- Shared modal keyboard accessibility ----------
+// Keeps Tab cycling inside the modal instead of escaping into the (visually
+// hidden but still-in-the-DOM) page behind it, and lets Escape close it.
+// Returns a detach function to call when the modal closes.
+function getFocusableElements(container) {
+  return Array.from(
+    container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+  ).filter((el) => !el.disabled && el.offsetParent !== null);
+}
+
+function attachModalKeyboardHandling(modalEl, onEscape) {
+  function handleKeydown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onEscape();
+      return;
+    }
+    if (e.key === "Tab") {
+      const focusable = getFocusableElements(modalEl);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+  modalEl.addEventListener("keydown", handleKeydown);
+  return () => modalEl.removeEventListener("keydown", handleKeydown);
+}
+
+// Shows a dialog styled like the rest of the app with any set of buttons.
+// choices: [{ label, value, kind }] where kind is "primary" or "ghost".
+// The FIRST choice gets initial focus, so put the safest option first.
+// Resolves with the chosen value, or null if dismissed (Escape / overlay).
+function showChoice(message, choices) {
+  return new Promise((resolve) => {
+    const previouslyFocused = document.activeElement;
+    confirmModalMessage.textContent = message;
+    confirmModalActions.innerHTML = "";
+    const buttons = choices.map((c) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn " + (c.kind === "primary" ? "btn-teal" : "btn-ghost");
+      btn.textContent = c.label;
+      btn.addEventListener("click", () => cleanup(c.value));
+      return btn;
+    });
+    // Visual order: safest option sits on the left, primary on the right.
+    buttons.forEach((b) => confirmModalActions.appendChild(b));
+    confirmModal.hidden = false;
+    if (buttons[0]) buttons[0].focus();
+
+    const detachKeyboard = attachModalKeyboardHandling(confirmModal, () => cleanup(null));
+
+    function onOverlay(e) {
+      if (e.target === confirmModal) cleanup(null);
+    }
+    function cleanup(result) {
+      confirmModal.hidden = true;
+      confirmModal.removeEventListener("click", onOverlay);
+      detachKeyboard();
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") previouslyFocused.focus();
+      resolve(result);
+    }
+    confirmModal.addEventListener("click", onOverlay);
+  });
+}
+
+// Yes/No convenience wrapper. Resolves true only for Yes.
+async function showConfirm(message, yesLabel = "Yes", noLabel = "No") {
+  const result = await showChoice(message, [
+    { label: noLabel, value: false, kind: "ghost" },
+    { label: yesLabel, value: true, kind: "primary" }
+  ]);
+  return result === true;
+}
+
+// Everything that should stay locked until an agent clicks "Work on a Claim".
+// (Per-block CMD Template controls are locked/unlocked separately inside
+// setFormEnabled(), since blocks can be added/removed at any time.)
+const STATIC_LOCKABLE_CONTROLS = [
+  ...HEADER_FIELD_IDS.map((id) => els[id]),
+  endSessionBtn,
+  addCmdBlockBtn
+];
+
+let claimStarted = false;
+let claimStartTime = null; // ISO string
+let claimOwnerEmail = null; // who started the claim in progress (survives a sign-in expiry)
+let timerInterval = null;
+
+// ---------- Shared presence (who's working what) ----------
+// Unlike the form data, this is written to the Google Sheet so every agent
+// on the deployed page can see it -- not just this browser.
+
+// Set this to your own OAuth 2.0 Web Client ID from Google Cloud Console
+// (Credentials > Create Credentials > OAuth client ID > Web application).
+// Add your deployed URL(s) under "Authorized JavaScript origins" there.
+// See README.md for the full walkthrough.
+const GOOGLE_CLIENT_ID = "519974257344-5u0bjm2sdctrnlq6b1oflsvesgn291fc.apps.googleusercontent.com";
+
+// Optional: Google Workspace domain, e.g. "takahami.com". This only shapes the
+// sign-in prompt and shows a friendlier error early. The real access check is
+// ALLOWED_EMAIL_DOMAIN / ALLOWED_EMAILS in Apps_Script_Code.gs, which the
+// server enforces on every request.
+const ALLOWED_EMAIL_DOMAIN = "";
+
+// v2: the saved identity now carries the server-issued sign-in token. Older
+// saved identities (v1, no token) are ignored, so agents sign in once more.
+const AGENT_IDENTITY_KEY = "tpaCallLog.agentIdentityV2";
+const LEGACY_AGENT_IDENTITY_KEY = "tpaCallLog.agentIdentityV1";
+let currentAgent = null; // { name, email, picture, token, tokenExpiresAt, isManager }
+
+// Finished claims waiting to be confirmed by the sheet. Kept in localStorage
+// so a dropped connection, a slow Apps Script, or a closed tab never loses a
+// claim or its measured time; retried automatically until the sheet confirms.
+const OUTBOX_KEY = "docket.outboxV1";
+const OUTBOX_RETRY_MS = 30000;
+const REQUEST_TIMEOUT_MS = 45000; // Apps Script cold starts can take ~15s
+
+// ---------- Talking to the sheet ----------
+// Every request is a POST with the sign-in token in the body. Apps Script
+// returns readable JSON for text/plain POSTs, so the page can confirm each
+// write actually succeeded instead of assuming it did.
+function isSheetConnected() {
+  return !!WEB_APP_URL && WEB_APP_URL !== "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
+}
+
+async function api(type, body, opts) {
+  opts = opts || {};
+  if (!isSheetConnected()) throw new Error("Sheet isn't connected yet.");
+  const payload = Object.assign({ type }, body || {});
+  if (!opts.noAuth) {
+    if (!currentAgent || !currentAgent.token) {
+      const e = new Error("Not signed in.");
+      e.unauthorized = true;
+      throw e;
+    }
+    payload.auth = currentAgent.token;
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!res.ok) throw new Error("The sheet responded with HTTP " + res.status + ".");
+  const data = await res.json();
+  if (data && data.status === "unauthorized") {
+    handleUnauthorized();
+    const e = new Error(data.message || "Please sign in again.");
+    e.unauthorized = true;
+    throw e;
+  }
+  if (!data || data.status !== "ok") {
+    throw new Error((data && data.message) || "The sheet returned an error.");
+  }
+  return data;
+}
+
+// The server rejected our token (expired after 12h, or access removed).
+// Show the sign-in screen but keep the draft and any unsent claims; they
+// carry on after the agent signs back in with the same account.
+function handleUnauthorized() {
+  if (!currentAgent) return;
+  currentAgent = null;
+  storageSet(AGENT_IDENTITY_KEY, null);
+  stopKeepWarm();
+  renderAgentIdentity();
+  showGateError("Your sign-in expired. Sign in again to continue \u2014 your current claim is saved.");
+}
+
+let mySessionId = null;
+let heartbeatInterval = null;
+let agentsPollInterval = null;
+let agentsTickInterval = null;
+const HEARTBEAT_MS = 20000;
+const AGENTS_POLL_MS = 15000;
+
+function generateSessionId() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "sess-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+}
+
+function getAgentName() {
+  return currentAgent ? currentAgent.name : "";
+}
+
+function getAgentEmail() {
+  return currentAgent ? currentAgent.email : "";
+}
+
+function decodeGoogleJwt(token) {
+  try {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .join("")
+    );
+    return JSON.parse(json);
+  } catch (err) {
+    return null;
+  }
+}
+
+function renderAgentIdentity() {
+  if (currentAgent) {
+    signInGate.hidden = true;
+    agentSignedIn.hidden = false;
+    agentDisplayName.textContent = currentAgent.name;
+    if (currentAgent.picture) {
+      agentAvatar.onerror = () => {
+        agentAvatar.style.display = "none";
+      };
+      agentAvatar.src = currentAgent.picture;
+      agentAvatar.style.display = "";
+    } else {
+      agentAvatar.style.display = "none";
+    }
+    startClaimBtn.disabled = false;
+    clearCompletedBtn.hidden = !currentAgent.isManager;
+  } else {
+    signInGate.hidden = false;
+    agentSignedIn.hidden = true;
+    startClaimBtn.disabled = true;
+    clearCompletedBtn.hidden = true;
+  }
+}
+
+function setCurrentAgent(agent) {
+  // A different person signing in on this browser must never inherit the
+  // previous agent's half-filled claim (patient details are PHI).
+  const draft = storageGet(DRAFT_KEY);
+  if (draft && draft.ownerEmail && draft.ownerEmail !== agent.email) {
+    resetFormForNextClaim({ silent: true });
+  }
+  currentAgent = agent;
+  storageSet(AGENT_IDENTITY_KEY, agent);
+  clearGateError();
+  renderAgentIdentity();
+  startAgentWarmups(); // prefetch My Log + keep the backend warm from here on
+  flushOutbox();       // send anything left over from before the sign-in expired
+  if (claimStarted) {
+    postPresence("sessionHeartbeat", presencePayload());
+    startHeartbeat();
+  }
+  fetchActiveAgents();
+  fetchCompletedToday();
+}
+
+function signOutAgent() {
+  if (claimStarted) {
+    showStatus("Finish or reset your current claim before signing out.", "err", 4000);
+    return;
+  }
+  const pending = outboxForCurrentAgent().length;
+  if (pending) {
+    showStatus(
+      `${pending} finished claim${pending > 1 ? "s haven\u2019t" : " hasn\u2019t"} reached the sheet yet. Stay signed in until it sends.`,
+      "err",
+      6000
+    );
+    flushOutbox();
+    return;
+  }
+  currentAgent = null;
+  storageSet(AGENT_IDENTITY_KEY, null);
+  // Wipe leftover patient details so the next person on this computer
+  // doesn't see them.
+  resetFormForNextClaim({ silent: true });
+  storageSet(DRAFT_KEY, null);
+  myLogCache = null;        // don't let the next agent see this one's cached log
+  myLogCacheEmail = null;
+  stopKeepWarm();           // stop pinging the backend once nobody's signed in
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  renderAgentIdentity();
+}
+
+function showGateError(message) {
+  signInGateHint.textContent = message;
+  signInGateHint.classList.add("err");
+}
+
+function clearGateError() {
+  signInGateHint.textContent = "";
+  signInGateHint.classList.remove("err");
+}
+
+// The decoded JWT is used only for the avatar and an early domain hint. The
+// credential itself is sent to the server, which verifies it with Google and
+// returns the token every later request must carry.
+async function handleGoogleCredential(response) {
+  clearGateError();
+  const payload = decodeGoogleJwt(response.credential);
+  if (!payload) {
+    showGateError("Sign-in failed \u2014 couldn't read the response from Google. Please try again.");
+    return;
+  }
+  if (ALLOWED_EMAIL_DOMAIN && payload.hd !== ALLOWED_EMAIL_DOMAIN) {
+    showGateError(`Please sign in with your @${ALLOWED_EMAIL_DOMAIN} account.`);
+    if (window.google && google.accounts && google.accounts.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+    return;
+  }
+  signInGateHint.classList.remove("err");
+  signInGateHint.textContent = "Signing you in\u2026";
+  try {
+    const data = await api("auth", { idToken: response.credential }, { noAuth: true });
+    setCurrentAgent({
+      name: data.name || payload.name || data.email,
+      email: data.email,
+      picture: payload.picture || "",
+      token: data.token,
+      tokenExpiresAt: data.tokenExpiresAt,
+      isManager: !!data.isManager
+    });
+  } catch (err) {
+    showGateError(err && err.message ? err.message : "Couldn\u2019t reach Docket\u2019s sheet. Check your connection and try again.");
+    if (window.google && google.accounts && google.accounts.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+  }
+}
+
+function initGoogleSignIn() {
+  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com") {
+    showGateError("Google Sign-In isn't set up yet \u2014 add your Client ID in index.html (see README.md).");
+    return;
+  }
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleSignIn, 300); // library still loading; retry shortly
+    return;
+  }
+
+  try {
+    const config = {
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+      auto_select: true
+    };
+    if (ALLOWED_EMAIL_DOMAIN) config.hd = ALLOWED_EMAIL_DOMAIN;
+
+    google.accounts.id.initialize(config);
+    google.accounts.id.renderButton(document.getElementById("googleSignInGateBtn"), {
+      theme: "outline",
+      size: "large",
+      shape: "rectangular",
+      text: "signin_with",
+      logo_alignment: "left",
+      width: Math.min(360, Math.max(240, document.getElementById("googleSignInGateBtn").clientWidth || 360))
+    });
+    // Only nudge with One Tap if we don't already recognize this agent from
+    // a cached sign-in -- otherwise it can pop up even though the app is
+    // already unlocked, which reads as a redundant/confusing prompt.
+    if (!currentAgent) {
+      google.accounts.id.prompt();
+    }
+  } catch (err) {
+    console.error("Google Sign-In failed to initialize:", err);
+    showGateError(
+      "Google Sign-In couldn't start. This usually means this page's URL isn't added under " +
+      "\u201cAuthorized JavaScript origins\u201d for this Client ID in Google Cloud Console."
+    );
+  }
+}
+
+async function postPresence(type, extra) {
+  if (!isSheetConnected() || !currentAgent) return;
+  // Never send a heartbeat once the local session has ended: a late one would
+  // put the agent back on everyone's panel. (sessionEnd is exempt: it's sent
+  // while the id is still set, then the id is cleared.)
+  if (type === "sessionHeartbeat" && !mySessionId) return;
+  // Name and email are not sent: the server takes them from the verified token.
+  const payload = Object.assign({ sessionId: mySessionId }, extra || {});
+  try {
+    await api(type, payload);
+  } catch (err) {
+    // Best-effort -- presence isn't the critical path.
+  }
+}
+
+function presencePayload() {
+  return {
+    patientName: els.patientName.value.trim(),
+    carrier: els.carrierTop.value.trim(),
+    startTime: claimStartTime
+  };
+}
+
+function startHeartbeat() {
+  stopHeartbeat();
+  heartbeatInterval = setInterval(() => {
+    postPresence("sessionHeartbeat", presencePayload());
+  }, HEARTBEAT_MS);
+}
+
+function stopHeartbeat() {
+  clearInterval(heartbeatInterval);
+  heartbeatInterval = null;
+}
+
+// Pushes patient/carrier to the shared panel shortly after an edit, instead
+// of waiting for the next periodic heartbeat (up to HEARTBEAT_MS away).
+let presenceUpdateTimer = null;
+function schedulePresenceUpdate() {
+  if (!claimStarted) return;
+  clearTimeout(presenceUpdateTimer);
+  presenceUpdateTimer = setTimeout(() => {
+    // Re-check at fire time -- the session may have ended during the debounce.
+    if (!claimStarted || !mySessionId) return;
+    postPresence("sessionHeartbeat", presencePayload());
+  }, 1200);
+}
+
+function setFormEnabled(enabled) {
+  STATIC_LOCKABLE_CONTROLS.forEach((el) => {
+    if (el) el.disabled = !enabled;
+  });
+
+  HEADER_FIELD_IDS.forEach((id) => {
+    const el = els[id];
+    if (el.clearBtn) el.clearBtn.disabled = !enabled;
+  });
+  if (els.dob.datePicker) els.dob.datePicker.disabled = !enabled;
+  if (els.dob.dateIconBtn) els.dob.dateIconBtn.disabled = !enabled;
+
+  cmdBlocks.forEach((block, i) => {
+    [
+      block.els.cmdDate, block.els.cmdCarrier, block.els.tpa, block.els.numClaims, block.els.billedAmount,
+      block.els.originalAllowed, block.els.actionTemplateSelect, block.els.action,
+      block.els.repRef, block.els.syncCarrierBtn, block.els.copyBtn,
+      block.els.syncTpaBtn, block.els.syncBilledAmountBtn, block.els.syncOriginalAllowedBtn,
+      block.els.syncActionTemplateBtn, block.els.syncActionBtn, block.els.syncRepRefBtn
+    ].forEach((el) => (el.disabled = !enabled));
+
+    // The first block can never be removed, so its remove button stays
+    // disabled/hidden regardless of lock state.
+    block.els.removeBtn.disabled = !enabled || i === 0;
+
+    CMD_FIELD_KEYS.forEach((key) => {
+      const el = block.els[key];
+      if (el.clearBtn) el.clearBtn.disabled = !enabled;
+    });
+    if (block.els.cmdDate.datePicker) block.els.cmdDate.datePicker.disabled = !enabled;
+    if (block.els.cmdDate.dateIconBtn) block.els.cmdDate.dateIconBtn.disabled = !enabled;
+  });
+}
+
+function formatElapsed(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const hh = Math.floor(totalSeconds / 3600);
+  const mm = Math.floor((totalSeconds % 3600) / 60);
+  const ss = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  return hh > 0 ? `${pad(hh)}:${pad(mm)}:${pad(ss)}` : `${pad(mm)}:${pad(ss)}`;
+}
+
+function tickTimer() {
+  if (!claimStartTime) return;
+  const elapsed = Date.now() - new Date(claimStartTime).getTime();
+  claimTimerDisplay.textContent = formatElapsed(elapsed);
+}
+
+function startTimer() {
+  tickTimer();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function startClaimSession() {
+  if (!currentAgent) {
+    showStatus("Sign in with Google first.", "err");
+    return;
+  }
+
+  claimStarted = true;
+  claimStartTime = new Date().toISOString();
+  claimOwnerEmail = getAgentEmail();
+  mySessionId = generateSessionId();
+  setFormEnabled(true);
+  claimGateStart.hidden = true;
+  claimGateActive.hidden = false;
+  startTimer();
+
+  postPresence("sessionStart", { patientName: "", carrier: "", startTime: claimStartTime });
+  startHeartbeat();
+
+  saveNow();
+}
+
+function endClaimSession() {
+  if (mySessionId) postPresence("sessionEnd", {});
+  stopHeartbeat();
+  // Cancel any debounced presence update still waiting to fire (see
+  // schedulePresenceUpdate). Without this, a heartbeat queued up to ~1.2s before
+  // End Session lands *after* sessionEnd and revives the just-ended session.
+  clearTimeout(presenceUpdateTimer);
+  presenceUpdateTimer = null;
+  mySessionId = null;
+
+  claimStarted = false;
+  claimStartTime = null;
+  claimOwnerEmail = null;
+  stopTimer();
+  setFormEnabled(false);
+  claimGateStart.hidden = false;
+  claimGateActive.hidden = true;
+  claimTimerDisplay.textContent = "00:00";
+}
+
+// ---------- Storage helpers (localStorage -- this is a plain website) ----------
+function storageGet(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    // storage unavailable (e.g. private browsing) -- fail silently
+  }
+}
+
+// ---------- Theme toggle ----------
+// Uses a plain (non-JSON) localStorage value so the tiny inline script in
+// <head> -- which runs before this one, to apply the theme before first
+// paint and avoid a flash of the wrong theme -- can read it directly.
+const THEME_KEY = "docket.theme";
+const gateThemeToggleBtn = document.getElementById("gateThemeToggleBtn");
+const gateYearEl = document.getElementById("gateYear");
+if (gateYearEl) gateYearEl.textContent = new Date().getFullYear();
+const headerThemeToggleBtn = document.getElementById("headerThemeToggleBtn");
+
+const SUN_ICON =
+  '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M6.34 17.66l-1.41 1.41"></path><path d="M19.07 4.93l-1.41 1.41"></path></svg>';
+const MOON_ICON =
+  '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+function getCurrentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  // Icon shows what clicking it would switch *to*.
+  const icon = theme === "dark" ? SUN_ICON : MOON_ICON;
+  const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+  [gateThemeToggleBtn, headerThemeToggleBtn].forEach((btn) => {
+    if (!btn) return;
+    btn.innerHTML = icon;
+    btn.setAttribute("aria-label", label);
+    btn.title = label;
+  });
+}
+
+function toggleTheme() {
+  const next = getCurrentTheme() === "dark" ? "light" : "dark";
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch (e) {
+    // storage unavailable -- theme just won't persist across reloads
+  }
+  applyTheme(next);
+}
+
+if (gateThemeToggleBtn) gateThemeToggleBtn.addEventListener("click", toggleTheme);
+if (headerThemeToggleBtn) headerThemeToggleBtn.addEventListener("click", toggleTheme);
+
+// If the agent never explicitly chose a theme, keep following the OS-level
+// preference live (e.g. their system switching to dark mode at sunset).
+if (window.matchMedia) {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    let hasExplicitChoice = false;
+    try {
+      hasExplicitChoice = !!localStorage.getItem(THEME_KEY);
+    } catch (err) {
+      hasExplicitChoice = false;
+    }
+    if (!hasExplicitChoice) applyTheme(e.matches ? "dark" : "light");
+  });
+}
+
+// Sync the toggle buttons' icons with whatever the <head> script already
+// applied (it only sets the attribute -- these buttons didn't exist yet).
+applyTheme(getCurrentTheme());
+
+// ---------- Init ----------
+function init() {
+  storageSet(LEGACY_AGENT_IDENTITY_KEY, null); // pre-v2 identity had no token
+  const savedAgent = storageGet(AGENT_IDENTITY_KEY);
+  if (savedAgent && savedAgent.token && savedAgent.tokenExpiresAt > Date.now()) {
+    currentAgent = savedAgent;
+  } else if (savedAgent) {
+    storageSet(AGENT_IDENTITY_KEY, null);
+  }
+  renderAgentIdentity();
+  startAgentWarmups(); // if already signed in on load, warm up before first click
+  initGoogleSignIn();
+
+  // Always start with one CMD block; the draft restore below can add more
+  // if the saved session had several.
+  addCmdBlock({ skipDefaultDate: true });
+
+  const draft = storageGet(DRAFT_KEY);
+  if (draft) {
+    HEADER_FIELD_IDS.forEach((id) => {
+      if (draft[id] !== undefined) els[id].value = draft[id];
+    });
+
+    if (Array.isArray(draft.cmdBlocks) && draft.cmdBlocks.length) {
+      draft.cmdBlocks.forEach((blockData, i) => {
+        const block = i === 0 ? cmdBlocks[0] : addCmdBlock({ skipDefaultDate: true });
+        CMD_FIELD_KEYS.forEach((key) => {
+          if (blockData[key] !== undefined) block.els[key].value = blockData[key];
+        });
+        if (blockData.actionTemplateKey) {
+          block.els.actionTemplateSelect.value = blockData.actionTemplateKey;
+          block.lastAppliedTemplateKey = blockData.actionTemplateKey;
+        }
+        // One-time cleanup: earlier versions inserted this as real text into
+        // Rep & Ref# instead of showing it as a placeholder guide. If a
+        // saved/in-progress claim still has it, clear it so it goes back to
+        // being just a hint rather than text that needs to be erased.
+        if (block.els.repRef.value.trim() === TPA_PROPOSAL_REP_REF_HINT) {
+          block.els.repRef.value = "";
+        }
+      });
+    }
+  }
+  // Template #1's Date should always be today's Eastern date. When we're only
+  // restoring leftover autosave from an earlier day (no claim actually in
+  // progress), the saved Date is stale -- that's why #1 could show an old date
+  // while a freshly added #2 showed today. Refresh #1 to today in that case.
+  // A genuinely in-progress claim keeps whatever Date is already there, since
+  // its fields are unlocked and may have been edited by the agent.
+  const claimInProgress = !!(draft && draft.claimStarted && draft.claimStartTime);
+  if (!cmdBlocks[0].els.cmdDate.value || !claimInProgress) {
+    cmdBlocks[0].els.cmdDate.value = todayString();
+  }
+  syncAllClearButtons();
+
+  if (draft && draft.claimStarted && draft.claimStartTime) {
+    claimStarted = true;
+    claimStartTime = draft.claimStartTime;
+    claimOwnerEmail = draft.ownerEmail || null;
+    mySessionId = draft.mySessionId || generateSessionId();
+    setFormEnabled(true);
+    claimGateStart.hidden = true;
+    claimGateActive.hidden = false;
+    startTimer();
+
+    // Re-announce presence in case the page was closed/reloaded mid-claim;
+    // the backend upserts by sessionId so this is safe either way.
+    postPresence("sessionHeartbeat", presencePayload());
+    startHeartbeat();
+  } else {
+    setFormEnabled(false);
+    claimGateStart.hidden = false;
+    claimGateActive.hidden = true;
+  }
+
+  lastHeaderCarrier = els.carrierTop.value;
+  cmdBlocks.forEach(renderBlockPreview);
+  startAgentsPolling();
+  renderOutboxHint();
+  flushOutbox();
+}
+
+function todayString() {
+  // Always compute "today" in Eastern time (America/New_York) so the CMD
+  // Date matches the live clock and the backend, regardless of the agent's
+  // own device timezone -- and it follows the EST/EDT daylight-saving switch
+  // automatically (same reasoning as the live clock further down).
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric"
+  }).formatToParts(new Date());
+  const get = (type) => parts.find((p) => p.type === type).value;
+  return `${get("month")}/${get("day")}/${get("year")}`;
+}
+
+// ---------- Draft autosave ----------
+let saveTimer = null;
+
+function buildDraftObject() {
+  const draft = {};
+  HEADER_FIELD_IDS.forEach((id) => (draft[id] = els[id].value));
+  draft.cmdBlocks = cmdBlocks.map((block) => {
+    const blockData = {};
+    CMD_FIELD_KEYS.forEach((key) => (blockData[key] = block.els[key].value));
+    blockData.actionTemplateKey = block.lastAppliedTemplateKey;
+    return blockData;
+  });
+  draft.claimStarted = claimStarted;
+  draft.claimStartTime = claimStartTime;
+  draft.mySessionId = mySessionId;
+  draft.ownerEmail = claimOwnerEmail || getAgentEmail();
+  return draft;
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    storageSet(DRAFT_KEY, buildDraftObject());
+  }, 250);
+}
+
+function saveNow() {
+  clearTimeout(saveTimer);
+  storageSet(DRAFT_KEY, buildDraftObject());
+}
+
+// ---------- Currency formatting ----------
+function formatCurrencyOnBlur(input) {
+  const raw = input.value.replace(/[^0-9.]/g, "");
+  if (!raw) {
+    input.value = "";
+    return;
+  }
+  const num = parseFloat(raw);
+  if (isNaN(num)) {
+    input.value = "";
+    return;
+  }
+  input.value = "$" + num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ---------- Bracket placeholder jump ----------
+// Lets agents type directly over a highlighted [placeholder] instead of
+// backspacing through the brackets, and jump between them with Tab.
+const PLACEHOLDER_RE = /\[[^\[\]]*\]/g;
+
+function findPlaceholders(text) {
+  const matches = [];
+  let m;
+  PLACEHOLDER_RE.lastIndex = 0;
+  while ((m = PLACEHOLDER_RE.exec(text)) !== null) {
+    matches.push({ start: m.index, end: m.index + m[0].length });
+  }
+  return matches;
+}
+
+function hasPlaceholders(text) {
+  PLACEHOLDER_RE.lastIndex = 0;
+  return PLACEHOLDER_RE.test(text);
+}
+
+// Selects the next (or previous) [placeholder] relative to the caret /
+// current selection, wrapping around. Returns true if it found one.
+function jumpToPlaceholder(el, forward, fromPos) {
+  const matches = findPlaceholders(el.value);
+  if (!matches.length) return false;
+
+  const cur = fromPos !== undefined ? fromPos : (forward ? el.selectionEnd : el.selectionStart);
+  let target;
+  if (forward) {
+    target = matches.find((mm) => mm.start >= cur) || matches[0];
+  } else {
+    const reversed = matches.slice().reverse();
+    target = reversed.find((mm) => mm.end <= cur) || matches[matches.length - 1];
+  }
+
+  el.focus();
+  el.setSelectionRange(target.start, target.end);
+  return true;
+}
+
+function attachPlaceholderTabbing(el) {
+  el.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    if (!hasPlaceholders(el.value)) return; // nothing to jump to; let Tab move focus normally
+    e.preventDefault();
+    jumpToPlaceholder(el, !e.shiftKey);
+  });
+}
+
+// ---------- CMD blocks (one per claim/TPA call) ----------
+// Each block owns its own set of CMD Template fields (Date, Carrier, TPA,
+// Billed Amount, Original Allowed, Action Template, Action, Rep & Ref#).
+// Fields are looked up by data-field within the block's root element rather
+// than by id, so any number of blocks can exist at once without id clashes.
+const cmdBlocks = [];
+let cmdBlockCounter = 0;
+
+// Fields that have a "use above" button are <div>s with a separate <label for>.
+// A button inside a <label> becomes that label's control, so clicking the
+// field name used to fire "use above" and overwrite what the agent typed.
+function cmdBlockMarkup(n) {
+  const id = (field) => `cmd${n}-${field}`;
+  return `
+    <div class="cmd-block">
+      <div class="cmd-block-header">
+        <span class="cmd-block-title" data-role="title">CMD Template</span>
+        <button type="button" class="cmd-block-remove-btn" data-role="remove" hidden>Remove</button>
+      </div>
+      <div class="field-row">
+        <label class="field">
+          <span>Date</span>
+          <input type="text" id="${id("cmdDate")}" data-field="cmdDate" placeholder="MM/DD/YYYY" autocomplete="off" />
+        </label>
+        <div class="field">
+          <span><label for="${id("cmdCarrier")}">Carrier</label>
+            <button type="button" class="mini-link" data-role="syncCarrier" title="Copy Carrier from Patient / Claim Info">use above</button>
+          </span>
+          <input type="text" id="${id("cmdCarrier")}" data-field="cmdCarrier" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <span><label for="${id("tpa")}">TPA</label>
+            <button type="button" class="mini-link" data-role="syncTpa">use above</button>
+          </span>
+          <input type="text" id="${id("tpa")}" data-field="tpa" autocomplete="off" />
+        </div>
+        <label class="field">
+          <span># of Claims</span>
+          <input type="number" min="0" inputmode="numeric" id="${id("numClaims")}" data-field="numClaims" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <span><label for="${id("billedAmount")}">Billed Amount</label>
+            <button type="button" class="mini-link" data-role="syncBilledAmount">use above</button>
+          </span>
+          <input type="text" id="${id("billedAmount")}" data-field="billedAmount" placeholder="$0.00" inputmode="decimal" autocomplete="off" />
+        </div>
+        <div class="field">
+          <span><label for="${id("originalAllowed")}">Original Allowed</label>
+            <button type="button" class="mini-link" data-role="syncOriginalAllowed">use above</button>
+          </span>
+          <input type="text" id="${id("originalAllowed")}" data-field="originalAllowed" placeholder="$0.00" inputmode="decimal" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="field">
+        <span><label for="${id("actionTemplate")}">Action Template</label>
+          <button type="button" class="mini-link" data-role="syncActionTemplate">use above</button>
+        </span>
+        <select id="${id("actionTemplate")}" data-field="actionTemplateSelect">
+          <option value="">Pick a template&hellip;</option>
+          <optgroup label="Negotiation / Appeal">
+            <option value="nego_appeal">Initial APL request</option>
+          </optgroup>
+          <optgroup label="Appeal Follow Up">
+            <option value="appeal_fu_mail">Sent by mail</option>
+            <option value="appeal_fu_fax">Sent by fax</option>
+          </optgroup>
+          <optgroup label="Appeal Follow Up Escalation">
+            <option value="appeal_fu_escalation">Escalation status check</option>
+          </optgroup>
+          <optgroup label="TPA Proposals">
+            <option value="tpa_reopen">Reopen after declined counter-offer</option>
+            <option value="tpa_pricing_sheet">Confirm pricing sheet / open Pymt Status Inq</option>
+          </optgroup>
+          <optgroup label="Legacy Non-Negotiable / No TPA">
+            <option value="legacy_not_eligible_a">Not eligible &mdash; contacted INS</option>
+            <option value="legacy_not_eligible_b">Not eligible &mdash; priced externally check</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="field">
+        <span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><label for="${id("action")}">Action</label>
+            <span class="mini-hint">type over highlighted [ ] &middot; Tab = next</span>
+          </span>
+          <button type="button" class="mini-link" data-role="syncAction">use above</button>
+        </span>
+        <textarea id="${id("action")}" data-field="action" rows="5" placeholder="Pick a template above, or type your own"></textarea>
+      </div>
+
+      <div class="field">
+        <span><label for="${id("repRef")}">Rep &amp; Ref#</label>
+          <button type="button" class="mini-link" data-role="syncRepRef">use above</button>
+        </span>
+        <input type="text" id="${id("repRef")}" data-field="repRef" placeholder="Rep name / callback ref #" autocomplete="off" />
+      </div>
+
+      <div class="cmd-block-preview terminal-card">
+        <div class="terminal-header">
+          <span class="terminal-header-left">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l-3 3 3 3"></path><path d="M16 9l3 3-3 3"></path><path d="M13 5l-2 14"></path></svg>
+            <span class="terminal-title">CMD preview</span>
+          </span>
+          <button type="button" class="cmd-block-copy-btn" data-role="copy">Copy</button>
+        </div>
+        <pre class="terminal-body" data-role="preview"></pre>
+      </div>
+    </div>
+  `.trim();
+}
+
+// Updates each block's header label ("CMD Template" / "CMD Template #2" /
+// ...) and shows the remove button on every block except the first, which
+// always stays as the one guaranteed block.
+function renumberCmdBlocks() {
+  cmdBlocks.forEach((block, i) => {
+    block.els.title.textContent = cmdBlocks.length > 1 ? `CMD Template #${i + 1}` : "CMD Template";
+    block.els.removeBtn.hidden = i === 0;
+  });
+  updateUseAboveVisibility();
+}
+
+// The per-block "use above" buttons copy from the template directly above, so
+// they only make sense from template #2 onward. Hide them on template #1
+// (index 0), which has nothing above it. (Carrier's "use above" is left alone
+// -- it copies from the header field, which always exists.)
+function updateUseAboveVisibility() {
+  cmdBlocks.forEach((block, i) => {
+    const hide = i === 0;
+    [
+      block.els.syncTpaBtn,
+      block.els.syncBilledAmountBtn,
+      block.els.syncOriginalAllowedBtn,
+      block.els.syncActionTemplateBtn,
+      block.els.syncActionBtn,
+      block.els.syncRepRefBtn
+    ].forEach((btn) => { if (btn) btn.hidden = hide; });
+  });
+}
+
+// Copy a single per-block field's value from the CMD template directly above
+// (the previous block) into this block. No-op on template #1 (nothing above).
+function copyFieldFromBlockAbove(block, fieldKey) {
+  const idx = cmdBlocks.indexOf(block);
+  if (idx <= 0) return;
+  const prev = cmdBlocks[idx - 1];
+  const el = block.els[fieldKey];
+  el.value = prev.els[fieldKey].value;
+  if (el.clearBtn) el.clearBtn.hidden = !el.value;
+  renderBlockPreview(block);
+  scheduleSave();
+}
+
+function addCmdBlock(opts) {
+  opts = opts || {};
+  cmdBlockCounter += 1;
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = cmdBlockMarkup(cmdBlockCounter);
+  const root = wrapper.firstElementChild;
+  cmdBlocksList.appendChild(root);
+
+  const blockEls = {
+    root,
+    title: root.querySelector('[data-role="title"]'),
+    removeBtn: root.querySelector('[data-role="remove"]'),
+    syncCarrierBtn: root.querySelector('[data-role="syncCarrier"]'),
+    syncTpaBtn: root.querySelector('[data-role="syncTpa"]'),
+    syncBilledAmountBtn: root.querySelector('[data-role="syncBilledAmount"]'),
+    syncOriginalAllowedBtn: root.querySelector('[data-role="syncOriginalAllowed"]'),
+    syncActionTemplateBtn: root.querySelector('[data-role="syncActionTemplate"]'),
+    syncActionBtn: root.querySelector('[data-role="syncAction"]'),
+    syncRepRefBtn: root.querySelector('[data-role="syncRepRef"]'),
+    cmdDate: root.querySelector('[data-field="cmdDate"]'),
+    cmdCarrier: root.querySelector('[data-field="cmdCarrier"]'),
+    tpa: root.querySelector('[data-field="tpa"]'),
+    numClaims: root.querySelector('[data-field="numClaims"]'),
+    billedAmount: root.querySelector('[data-field="billedAmount"]'),
+    originalAllowed: root.querySelector('[data-field="originalAllowed"]'),
+    actionTemplateSelect: root.querySelector('[data-field="actionTemplateSelect"]'),
+    action: root.querySelector('[data-field="action"]'),
+    repRef: root.querySelector('[data-field="repRef"]'),
+    previewEl: root.querySelector('[data-role="preview"]'),
+    copyBtn: root.querySelector('[data-role="copy"]')
+  };
+
+  const block = { n: cmdBlockCounter, els: blockEls, lastAppliedTemplateKey: "" };
+
+  CMD_FIELD_KEYS.forEach((key) => wrapWithClearButton(blockEls[key]));
+  addDatePickerTo(blockEls.cmdDate);
+
+  if (!opts.skipDefaultDate) blockEls.cmdDate.value = todayString();
+
+  CMD_FIELD_KEYS.forEach((key) => {
+    blockEls[key].addEventListener("input", () => {
+      renderBlockPreview(block);
+      scheduleSave();
+    });
+  });
+
+  ["billedAmount", "originalAllowed"].forEach((key) => {
+    blockEls[key].addEventListener("blur", () => {
+      formatCurrencyOnBlur(blockEls[key]);
+      renderBlockPreview(block);
+      scheduleSave();
+    });
+  });
+
+  blockEls.syncCarrierBtn.addEventListener("click", () => {
+    blockEls.cmdCarrier.value = els.carrierTop.value;
+    if (blockEls.cmdCarrier.clearBtn) blockEls.cmdCarrier.clearBtn.hidden = !blockEls.cmdCarrier.value;
+    renderBlockPreview(block);
+    scheduleSave();
+  });
+
+  // "use above" for the per-block fields copies the value from the CMD
+  // template directly above this one (the previous block). Template #1 has
+  // nothing above it, so these buttons are hidden on it (see
+  // updateUseAboveVisibility). Carrier is handled separately above because it
+  // pulls from the header field instead of the previous block.
+  blockEls.syncTpaBtn.addEventListener("click", () => copyFieldFromBlockAbove(block, "tpa"));
+  blockEls.syncBilledAmountBtn.addEventListener("click", () => copyFieldFromBlockAbove(block, "billedAmount"));
+  blockEls.syncOriginalAllowedBtn.addEventListener("click", () => copyFieldFromBlockAbove(block, "originalAllowed"));
+  blockEls.syncActionBtn.addEventListener("click", () => copyFieldFromBlockAbove(block, "action"));
+  blockEls.syncRepRefBtn.addEventListener("click", () => copyFieldFromBlockAbove(block, "repRef"));
+
+  // Action Template is a dropdown: copy the block-above's selection, then run
+  // the same logic as picking a template so the Action text, placeholder hint,
+  // preview and saved state all stay in sync (including its "replace current
+  // text?" confirm if this block already has Action text).
+  blockEls.syncActionTemplateBtn.addEventListener("click", () => {
+    const idx = cmdBlocks.indexOf(block);
+    if (idx <= 0) return;
+    const prev = cmdBlocks[idx - 1];
+    blockEls.actionTemplateSelect.value = prev.els.actionTemplateSelect.value;
+    blockEls.actionTemplateSelect.dispatchEvent(new Event("change"));
+  });
+
+  blockEls.actionTemplateSelect.addEventListener("change", async () => {
+    const key = blockEls.actionTemplateSelect.value;
+    if (!key) {
+      block.lastAppliedTemplateKey = "";
+      return;
+    }
+
+    const template = ACTION_TEMPLATES[key];
+    const current = blockEls.action.value.trim();
+    if (current && current !== template) {
+      const ok = await showConfirm("Replace the current Action text with this template?");
+      if (!ok) {
+        blockEls.actionTemplateSelect.value = block.lastAppliedTemplateKey; // revert to whatever's actually applied
+        return;
+      }
+    }
+
+    blockEls.action.value = template;
+    block.lastAppliedTemplateKey = key;
+
+    // Guide text only -- shows when the field is empty, never inserted as
+    // real content, so there's nothing an agent needs to erase.
+    blockEls.repRef.placeholder = TPA_PROPOSAL_KEYS.includes(key)
+      ? TPA_PROPOSAL_REP_REF_HINT
+      : DEFAULT_REP_REF_PLACEHOLDER;
+
+    syncAllClearButtons();
+    renderBlockPreview(block);
+    scheduleSave();
+
+    // Highlight the first [placeholder] so agents can just start typing over it.
+    jumpToPlaceholder(blockEls.action, true, 0);
+  });
+
+  attachPlaceholderTabbing(blockEls.action);
+
+  blockEls.copyBtn.addEventListener("click", () => copyBlockTemplate(block));
+
+  blockEls.removeBtn.addEventListener("click", async () => {
+    const hasContent = !isCmdBlockEmpty(block);
+    if (hasContent) {
+      const ok = await showConfirm("Remove this CMD template? Anything entered in it will be lost.");
+      if (!ok) return;
+    }
+    removeCmdBlock(block);
+  });
+
+  cmdBlocks.push(block);
+  renumberCmdBlocks();
+  setFormEnabled(claimStarted); // match the form's current lock state
+  renderBlockPreview(block);
+  return block;
+}
+
+function removeCmdBlock(block) {
+  const idx = cmdBlocks.indexOf(block);
+  if (idx === -1) return;
+  block.els.root.remove();
+  cmdBlocks.splice(idx, 1);
+  renumberCmdBlocks();
+  scheduleSave();
+}
+
+function clearCmdBlockFields(block) {
+  CMD_FIELD_KEYS.forEach((key) => (block.els[key].value = ""));
+  block.els.actionTemplateSelect.value = "";
+  block.lastAppliedTemplateKey = "";
+  block.els.repRef.placeholder = DEFAULT_REP_REF_PLACEHOLDER;
+}
+
+function isCmdBlockEmpty(block) {
+  // Date is auto-filled to today when a block is created, so it doesn't
+  // count as "the agent entered something" on its own -- otherwise a block
+  // added by accident and left untouched would still get logged.
+  return CMD_FIELD_KEYS.filter((key) => key !== "cmdDate").every((key) => !block.els[key].value.trim());
+}
+
+addCmdBlockBtn.addEventListener("click", () => {
+  const block = addCmdBlock();
+  if (els.carrierTop.value && !block.els.cmdCarrier.value) {
+    block.els.cmdCarrier.value = els.carrierTop.value;
+    if (block.els.cmdCarrier.clearBtn) block.els.cmdCarrier.clearBtn.hidden = false;
+    renderBlockPreview(block);
+  }
+  scheduleSave();
+  // Carrier is already filled in, so start the agent on TPA.
+  (block.els.cmdCarrier.value ? block.els.tpa : block.els.cmdCarrier).focus();
+});
+
+// ---------- CMD template text ----------
+function buildBlockTemplateText(block) {
+  const v = (key) => block.els[key].value.trim();
+  return (
+`Date: ${v("cmdDate")}
+Carrier: ${v("cmdCarrier")}
+TPA: ${v("tpa")}
+Billed Amount: ${v("billedAmount")}
+Original Allowed Amount: ${v("originalAllowed")}
+Action: ${v("action")}
+Rep & Ref#: ${v("repRef")}`
+  );
+}
+
+function renderBlockPreview(block) {
+  block.els.previewEl.textContent = buildBlockTemplateText(block);
+}
+
+// ---------- Status messages ----------
+let statusTimer = null;
+function showStatus(message, kind = "info", timeout = 3200) {
+  clearTimeout(statusTimer);
+  statusBar.textContent = message;
+  statusBar.className = "status-bar " + kind;
+  statusBar.hidden = false;
+  if (timeout) {
+    statusTimer = setTimeout(() => {
+      statusBar.hidden = true;
+    }, timeout);
+  }
+}
+
+// ---------- Copy ----------
+// Returns true/false so callers can give their own success/failure feedback.
+async function copyTextToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try {
+      document.execCommand("copy");
+      ok = true;
+    } catch (e2) {
+      ok = false;
+    }
+    document.body.removeChild(ta);
+    return ok;
+  }
+}
+
+async function copyBlockTemplate(block) {
+  if (!claimStarted) {
+    showStatus("Click \u201cWork on a Claim\u201d first.", "err");
+    return;
+  }
+  const btn = block.els.copyBtn;
+  const original = btn.textContent;
+  btn.disabled = true;
+
+  const text = buildBlockTemplateText(block);
+  const ok = await copyTextToClipboard(text);
+
+  if (ok && hasPlaceholders(block.els.action.value)) {
+    showStatus("Copied \u2014 but the Action text still has unfilled [placeholders].", "err", 4500);
+    btn.textContent = "\u2713 Copied!";
+  } else if (ok) {
+    showStatus("CMD template copied to clipboard.", "ok");
+    btn.textContent = "\u2713 Copied!";
+  } else {
+    showStatus("Couldn't copy automatically \u2014 select and copy manually.", "err");
+    btn.textContent = "Couldn't copy";
+  }
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.disabled = !claimStarted;
+  }, 1600);
+}
+
+// ---------- End Session: log to sheet, then stop timer & lock form ----------
+// Clears the form and ends the local session/timer so the next claim
+// starts clean. Used both after a successful log and when an agent
+// declines to log a blank claim.
+function resetFormForNextClaim() {
+  HEADER_FIELD_IDS.forEach((id) => (els[id].value = ""));
+
+  // Drop every block but the first -- that one always stays as the
+  // guaranteed starting block for the next claim.
+  while (cmdBlocks.length > 1) {
+    removeCmdBlock(cmdBlocks[cmdBlocks.length - 1]);
+  }
+  clearCmdBlockFields(cmdBlocks[0]);
+  cmdBlocks[0].els.cmdDate.value = todayString();
+
+  lastHeaderCarrier = "";
+  syncAllClearButtons();
+  endClaimSession();
+  saveNow();
+  renderBlockPreview(cmdBlocks[0]);
+}
+
+// ---------- Outbox: finished claims waiting for the sheet to confirm ----------
+function readOutbox() {
+  const box = storageGet(OUTBOX_KEY);
+  return Array.isArray(box) ? box : [];
+}
+function writeOutbox(box) {
+  storageSet(OUTBOX_KEY, box);
+  renderOutboxHint();
+}
+function outboxForCurrentAgent() {
+  const email = getAgentEmail();
+  return email ? readOutbox().filter((c) => c.ownerEmail === email) : [];
+}
+
+function renderOutboxHint() {
+  const pending = outboxForCurrentAgent().length;
+  if (pending) {
+    logHint.textContent =
+      `${pending} finished claim${pending > 1 ? "s are" : " is"} saved on this computer and waiting to reach the sheet. Docket retries automatically \u2014 keep this tab open.`;
+    logHint.classList.add("log-hint-pending");
+  } else {
+    logHint.classList.remove("log-hint-pending");
+    if (logHint.textContent.indexOf("waiting to reach the sheet") !== -1) logHint.textContent = "";
+  }
+}
+
+// Sends every pending claim for the signed-in agent, oldest first. Calls are
+// queued one after another (never in parallel), so a retry already running
+// can't make End Session report a claim as unsent. The server is idempotent
+// by sessionId: re-sending a claim whose reply got lost creates no duplicates.
+let flushChain = Promise.resolve();
+function flushOutbox() {
+  const run = () => flushOutboxOnce();
+  flushChain = flushChain.then(run, run);
+  return flushChain;
+}
+
+async function flushOutboxOnce() {
+  if (!currentAgent || !isSheetConnected()) return { sent: 0, failed: 0 };
+  let sent = 0;
+  let failed = 0;
+  let lastError = "";
+  for (const claim of outboxForCurrentAgent()) {
+    try {
+      await api("logClaim", claim.payload);
+      writeOutbox(readOutbox().filter((c) => c.payload.sessionId !== claim.payload.sessionId));
+      sent += 1;
+    } catch (err) {
+      failed += 1;
+      lastError = err && err.message ? err.message : String(err);
+      if (err && err.unauthorized) break; // wait for the agent to sign back in
+    }
+  }
+  if (sent) {
+    myLogCache = null;
+    myLogCacheEmail = null;
+    setTimeout(fetchCompletedToday, 800);
+  }
+  renderOutboxHint();
+  return { sent, failed, lastError };
+}
+
+setInterval(() => {
+  if (outboxForCurrentAgent().length) flushOutbox();
+}, OUTBOX_RETRY_MS);
+window.addEventListener("online", () => flushOutbox());
+
+// Labels of blocks whose Action still contains an unfilled [placeholder].
+function blocksWithPlaceholders(blocks) {
+  return blocks
+    .filter((b) => hasPlaceholders(b.els.action.value))
+    .map((b) => (cmdBlocks.length > 1 ? `CMD Template #${cmdBlocks.indexOf(b) + 1}` : "the CMD Template"));
+}
+
+async function endSession() {
+  if (!claimStarted) {
+    showStatus("Click \u201cWork on a Claim\u201d first.", "err");
+    return;
+  }
+
+  if (!isSheetConnected()) {
+    showStatus("Sheet isn't connected yet \u2014 deploy the Apps Script and paste the URL into WEB_APP_URL in index.html.", "err", 6000);
+    return;
+  }
+
+  if (!els.patientName.value.trim()) {
+    const choice = await showChoice("Patient Name is empty.", [
+      { label: "Go back", value: "back", kind: "ghost" },
+      { label: "Discard claim", value: "discard", kind: "ghost" },
+      { label: "Log anyway", value: "log", kind: "primary" }
+    ]);
+    if (choice === "discard") {
+      const sure = await showConfirm("Discard this claim? Nothing will be logged and its time won\u2019t be recorded.", "Discard", "Keep it");
+      if (sure) {
+        resetFormForNextClaim();
+        showStatus("Claim discarded \u2014 nothing was logged.", "info", 2500);
+      }
+      return;
+    }
+    if (choice !== "log") {
+      els.patientName.focus();
+      return;
+    }
+  }
+
+  // Always log the first block; additional blocks only if something was entered.
+  const blocksToLog = cmdBlocks.filter((block, i) => i === 0 || !isCmdBlockEmpty(block));
+
+  const unfilled = blocksWithPlaceholders(blocksToLog);
+  if (unfilled.length) {
+    const ok = await showConfirm(
+      `The Action text in ${unfilled.join(", ")} still has unfilled [placeholders]. Log it anyway?`,
+      "Log anyway",
+      "Go back"
+    );
+    if (!ok) {
+      const first = blocksToLog.find((b) => hasPlaceholders(b.els.action.value));
+      if (first) jumpToPlaceholder(first.els.action, true, 0);
+      return;
+    }
+  }
+
+  // Capture everything, including the duration, before the session ends.
+  const header = {};
+  HEADER_FIELD_IDS.forEach((id) => (header[id] = els[id].value.trim()));
+  const durationSeconds = claimStartTime
+    ? Math.max(0, Math.round((Date.now() - new Date(claimStartTime).getTime()) / 1000))
+    : 0;
+  const payload = {
+    sessionId: mySessionId,
+    timestamp: new Date().toISOString(),
+    durationSeconds,
+    header,
+    blocks: blocksToLog.map((block) => {
+      const b = {};
+      CMD_FIELD_KEYS.forEach((key) => (b[key] = block.els[key].value.trim()));
+      b.actionTemplateKey = block.lastAppliedTemplateKey || "";
+      return b;
+    })
+  };
+  const patientNameForHint = header.patientName;
+
+  // The claim goes into the outbox (on this computer) BEFORE the form is
+  // cleared, so it survives a failed send, a closed tab or an expired sign-in.
+  writeOutbox(readOutbox().concat([{ ownerEmail: getAgentEmail(), payload }]));
+
+  // End the session locally right away so the timer stops the moment the
+  // agent ends, regardless of how long the sheet takes.
+  endSessionBtn.disabled = true;
+  endSessionBtn.textContent = "Logging\u2026";
+  resetFormForNextClaim();
+  showStatus(
+    payload.blocks.length > 1 ? `Sending ${payload.blocks.length} entries to the sheet\u2026` : "Sending entry to the sheet\u2026",
+    "info",
+    0
+  );
+
+  try {
+    const result = await flushOutbox();
+    const stillPending = readOutbox().some((c) => c.payload.sessionId === payload.sessionId);
+    if (!stillPending) {
+      showStatus(
+        payload.blocks.length > 1
+          ? `Logged ${payload.blocks.length} entries to the sheet \u2713`
+          : "Logged to the sheet \u2713",
+        "ok"
+      );
+      logHint.textContent = `Last logged: ${patientNameForHint || "(no name)"} at ${new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" })} ET`;
+      renderOutboxHint();
+    } else {
+      showStatus(
+        `Not confirmed by the sheet yet${result.lastError ? ` (${result.lastError})` : ""}. The claim is saved on this computer and will be retried automatically.`,
+        "err",
+        9000
+      );
+    }
+  } finally {
+    endSessionBtn.disabled = !claimStarted;
+    endSessionBtn.textContent = "End Session";
+  }
+}
+
+// ---------- Carrier follows Patient / Claim Info ----------
+// Each CMD template's Carrier mirrors the Carrier typed in Patient / Claim
+// Info. A template keeps following it as long as its Carrier is empty or
+// still matches the previous header value; once an agent types a different
+// carrier into a template (a claim with a different payer), that template is
+// left alone. "use above" still re-copies the header value on demand.
+let lastHeaderCarrier = "";
+
+function syncCarrierToBlocks() {
+  const next = els.carrierTop.value;
+  cmdBlocks.forEach((block) => {
+    const el = block.els.cmdCarrier;
+    if (!el.value.trim() || el.value === lastHeaderCarrier) {
+      if (el.value !== next) {
+        el.value = next;
+        if (el.clearBtn) el.clearBtn.hidden = !el.value;
+        renderBlockPreview(block);
+      }
+    }
+  });
+  lastHeaderCarrier = next;
+}
+
+els.carrierTop.addEventListener("input", syncCarrierToBlocks);
+
+// ---------- Event wiring ----------
+HEADER_FIELD_IDS.forEach((id) => {
+  els[id].addEventListener("input", () => {
+    scheduleSave();
+    if (id === "patientName" || id === "carrierTop") schedulePresenceUpdate();
+  });
+});
+
+endSessionBtn.addEventListener("click", endSession);
+
+startClaimBtn.addEventListener("click", startClaimSession);
+
+// ---------- Agents Working (shared across everyone, via the sheet) ----------
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+function renderAgents(sessions) {
+  if (!sessions || !sessions.length) {
+    agentsList.innerHTML = '<p class="log-empty">No one is working a claim right now.</p>';
+    return;
+  }
+
+  agentsList.innerHTML = sessions
+    .map((s) => {
+      const isYou = !!(s.agentEmail && getAgentEmail() && s.agentEmail.toLowerCase() === getAgentEmail().toLowerCase());
+      const agent = escapeHtml((s.agentName || "Unnamed agent") + (isYou ? " (you)" : ""));
+      const patient = escapeHtml(s.patientName || "(just started)");
+      const carrier = escapeHtml(s.carrier || "");
+      const meta = [patient, carrier].filter(Boolean).join(" &middot; ");
+
+      return `
+        <div class="agent-card${isYou ? " agent-card-you" : ""}" title="${escapeHtml(s.agentEmail || "")}">
+          <div class="ac-top">
+            <span>${agent}</span>
+            <span class="ac-timer" data-start="${escapeHtml(s.startTime || "")}">00:00</span>
+          </div>
+          ${meta ? `<div class="ac-meta">${meta}</div>` : ""}
+        </div>
+      `;
+    })
+    .join("");
+
+  tickAgentTimers();
+}
+
+let lastAgentsSyncTime = null;
+
+function tickAgentTimers() {
+  agentsList.querySelectorAll(".ac-timer").forEach((el) => {
+    const start = el.getAttribute("data-start");
+    if (!start) return;
+    el.textContent = formatElapsed(Date.now() - new Date(start).getTime());
+  });
+
+  if (lastAgentsSyncTime) {
+    const secondsAgo = Math.max(0, Math.round((Date.now() - lastAgentsSyncTime) / 1000));
+    agentsLastSync.textContent =
+      secondsAgo < 3 ? "Updated just now" : `Updated ${secondsAgo}s ago`;
+  }
+}
+
+let agentsListLoaded = false;
+// Don't flash the "Couldn't load" banner on a single transient blip -- the
+// backend occasionally drops a request under load. Only surface the error
+// after this many *consecutive* failures; until then we quietly keep the
+// last-good list on screen. Any success resets the counter.
+const LOAD_ERROR_THRESHOLD = 3;
+let agentsFailCount = 0;
+
+async function fetchActiveAgents() {
+  if (!isSheetConnected()) {
+    agentsStatus.hidden = false;
+    agentsStatus.textContent = "Sheet isn't connected yet.";
+    agentsStatus.className = "log-status err";
+    return;
+  }
+  if (!currentAgent) return; // the panel's data now requires a verified sign-in
+
+  if (!agentsListLoaded) {
+    agentsList.innerHTML = '<p class="log-empty">Loading\u2026</p>';
+  }
+
+  try {
+    const data = await api("activeSessions");
+    // We deliberately don't "self-heal" by deleting our own row when no claim
+    // is active here: a second tab may hold a real claim. The server's stale
+    // sweep (SESSION_STALE_MS) clears anything truly abandoned.
+    agentsFailCount = 0;
+    renderAgents(data.sessions || []);
+    agentsListLoaded = true;
+    agentsStatus.hidden = true;
+    lastAgentsSyncTime = Date.now();
+    tickAgentTimers();
+  } catch (err) {
+    if (err && err.unauthorized) return;
+    // Single blips are ignored and the last good list stays up. After several
+    // consecutive failures say so, so an empty or frozen panel isn't read as
+    // "nobody is working".
+    agentsFailCount += 1;
+    if (!agentsListLoaded) {
+      agentsList.innerHTML = '<p class="log-empty">No one is working a claim right now.</p>';
+      agentsListLoaded = true;
+    }
+    if (agentsFailCount >= LOAD_ERROR_THRESHOLD) {
+      agentsStatus.hidden = false;
+      agentsStatus.className = "log-status err";
+      agentsStatus.textContent = "Can\u2019t reach the sheet right now \u2014 this panel may be out of date.";
+    }
+  }
+}
+
+let lastCompletedEntries = [];
+
+function renderCompletedToday(entries) {
+  if (!entries || !entries.length) {
+    completedList.innerHTML = completedAgentFilter.value
+      ? '<p class="log-empty">No completed claims for this agent today.</p>'
+      : '<p class="log-empty">Nothing logged yet today.</p>';
+    return;
+  }
+
+  completedList.innerHTML = entries
+    .map((entry) => {
+      const patient = escapeHtml(entry.patientName || "(no name)");
+      const agent = escapeHtml(entry.agentName || "Unnamed agent");
+      const duration = formatElapsed((entry.durationSeconds || 0) * 1000);
+      return `
+        <div class="completed-entry">
+          <span class="ce-check">
+            <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"></path></svg>
+          </span>
+          <div class="ce-body">
+            <div class="ce-patient">${patient}</div>
+            <div class="ce-meta"><span class="ce-duration">${duration}</span> &middot; ${agent}</div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+// Rebuilds the filter's <option> list from whoever shows up in today's
+// entries, keeping the current selection if that agent is still present.
+function populateCompletedAgentFilter(entries) {
+  const current = completedAgentFilter.value;
+  const names = Array.from(new Set(entries.map((e) => e.agentName).filter(Boolean))).sort((a, b) =>
+    a.localeCompare(b)
+  );
+
+  completedAgentFilter.innerHTML =
+    '<option value="">All agents</option>' +
+    names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+
+  if (names.includes(current)) completedAgentFilter.value = current;
+}
+
+function applyCompletedFilter() {
+  const selected = completedAgentFilter.value;
+  const filtered = selected
+    ? lastCompletedEntries.filter((e) => e.agentName === selected)
+    : lastCompletedEntries;
+  renderCompletedToday(filtered);
+}
+
+let completedListLoaded = false;
+let completedFailCount = 0;
+
+async function fetchCompletedToday() {
+  if (!isSheetConnected() || !currentAgent) return;
+
+  if (!completedListLoaded) {
+    completedList.innerHTML = '<p class="log-empty">Loading\u2026</p>';
+  }
+
+  try {
+    const data = await api("completedToday", { limit: 100 });
+    completedFailCount = 0;
+    lastCompletedEntries = data.entries || [];
+    populateCompletedAgentFilter(lastCompletedEntries);
+    applyCompletedFilter();
+    completedListLoaded = true;
+    completedStatus.hidden = true;
+  } catch (err) {
+    if (err && err.unauthorized) return;
+    completedFailCount += 1;
+    if (!completedListLoaded) {
+      completedList.innerHTML = '<p class="log-empty">Nothing logged yet today.</p>';
+      completedListLoaded = true;
+    }
+    if (completedFailCount >= LOAD_ERROR_THRESHOLD) {
+      completedStatus.hidden = false;
+      completedStatus.className = "log-status err";
+      completedStatus.textContent = "Can\u2019t reach the sheet right now \u2014 this list may be out of date.";
+    }
+  }
+}
+
+function startAgentsPolling() {
+  fetchActiveAgents();
+  fetchCompletedToday();
+  clearInterval(agentsPollInterval);
+  agentsPollInterval = setInterval(() => {
+    // Hidden tabs don't poll; visibilitychange catches up on return. This cuts
+    // the load on Apps Script (and its concurrency limits) substantially.
+    if (document.hidden) return;
+    fetchActiveAgents();
+    fetchCompletedToday();
+  }, AGENTS_POLL_MS);
+  clearInterval(agentsTickInterval);
+  agentsTickInterval = setInterval(tickAgentTimers, 1000);
+}
+
+// ---------- View My Log (an agent's own past logged entries) ----------
+// Shows any amount as $1,234.00, whether the sheet hands back a number
+// (older rows were stored as plain numbers, which dropped the cents) or
+// text. Anything that isn't a plain amount is shown exactly as stored.
+function formatAmountForDisplay(raw) {
+  if (raw === undefined || raw === null || raw === "") return "";
+  const cleaned = String(raw).replace(/[$,\s]/g, "");
+  if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return String(raw);
+  const num = Number(cleaned);
+  const sign = num < 0 ? "-" : "";
+  const [whole, cents] = Math.abs(num).toFixed(2).split(".");
+  return `${sign}$${whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${cents}`;
+}
+
+function buildLogEntryText(entry) {
+  const AMOUNT_KEYS = ["Billed Amount", "Original Allowed Amount"];
+  const v = (key) => {
+    const raw = entry[key];
+    if (raw === undefined || raw === null) return "";
+    return AMOUNT_KEYS.includes(key) ? formatAmountForDisplay(raw) : String(raw);
+  };
+  return (
+`Patient Name: ${v("Patient Name")}      Facility: ${v("Facility")}     Carrier: ${v("Carrier")}
+DOB: ${v("DOB")}
+Member ID: ${v("Member ID")}
+TIN: ${v("TIN")}
+NPI: ${v("NPI")}
+DOS: ${v("DOS")}
+
+Date: ${v("CMD Date")}
+Carrier: ${v("CMD Carrier")}
+TPA: ${v("TPA")}
+# of Claims: ${v("# of Claims")}
+Billed Amount: ${v("Billed Amount")}
+Original Allowed Amount: ${v("Original Allowed Amount")}
+Action: ${v("Action")}
+Rep & Ref#: ${v("Rep & Ref#")}`
+  );
+}
+
+function formatMyLogTimestamp(raw) {
+  if (!raw) return "";
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? String(raw) : d.toLocaleString();
+}
+
+function renderMyLog(entries) {
+  if (!entries || !entries.length) {
+    myLogList.innerHTML = '<p class="log-empty">You haven\u2019t logged any claims yet.</p>';
+    return;
+  }
+
+  myLogList.innerHTML = entries
+    .map((entry, i) => {
+      const name = escapeHtml(entry["Patient Name"] || "(no name)");
+      const when = escapeHtml(formatMyLogTimestamp(entry["Timestamp"]));
+      const text = buildLogEntryText(entry);
+      return `
+        <div class="mylog-entry">
+          <div class="mylog-entry-header"><span>${name}</span><span class="mylog-entry-when">${when}</span></div>
+          <pre class="mylog-entry-body">${escapeHtml(text)}</pre>
+          <button type="button" class="btn btn-amber mylog-copy-btn" data-index="${i}">Copy</button>
+        </div>
+      `;
+    })
+    .join("");
+
+  myLogList.querySelectorAll(".mylog-copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const idx = parseInt(btn.getAttribute("data-index"), 10);
+      const ok = await copyTextToClipboard(buildLogEntryText(entries[idx]));
+      const original = btn.textContent;
+      btn.textContent = ok ? "Copied!" : "Couldn't copy";
+      setTimeout(() => (btn.textContent = original), 1500);
+    });
+  });
+}
+
+// Last successfully-loaded entries, kept so reopening the panel can paint
+// instantly instead of blanking to "Loading..." while the (inherently slow)
+// Apps Script round trip runs. myLogCacheEmail guards against showing one
+// agent's cached log to a different agent who signs in on the same page.
+let myLogCache = null;
+let myLogCacheEmail = null;
+
+// --- cold-start mitigation -------------------------------------------------
+// Apps Script containers sleep after a few idle minutes; the next call then
+// pays a ~15s spin-up, which is what made the first "My Log" open feel stuck.
+// Two fixes, both started once an agent is signed in (see startAgentWarmups):
+//   1. Silently prefetch My Log right after sign-in, so the cold start burns
+//      off in the background and the first real open paints from cache.
+//   2. Ping the endpoint every few minutes to keep the container warm, so it
+//      rarely goes cold in the first place.
+let keepWarmInterval = null;
+const KEEP_WARM_MS = 4 * 60 * 1000; // 4 minutes
+
+function startAgentWarmups() {
+  if (!getAgentEmail()) return;   // only meaningful once actually signed in
+  fetchMyLog({ silent: true });   // warm the cache + container right now
+  stopKeepWarm();                 // never stack intervals across re-sign-ins
+  keepWarmInterval = setInterval(() => {
+    if (!getAgentEmail()) { stopKeepWarm(); return; }
+    // Cheapest possible call: the bare endpoint returns a tiny liveness blip
+    // (no sheet scan) but keeps the container spun up. Failures are ignored.
+    fetch(WEB_APP_URL).catch(() => {});
+  }, KEEP_WARM_MS);
+}
+
+function stopKeepWarm() {
+  if (keepWarmInterval) {
+    clearInterval(keepWarmInterval);
+    keepWarmInterval = null;
+  }
+}
+
+async function fetchMyLog(opts) {
+  opts = opts || {};
+  // Silent mode: warm myLogCache (and the Apps Script container) in the
+  // background without touching the modal DOM or surfacing any errors. Used by
+  // the sign-in prefetch so the first real open paints instantly from cache
+  // instead of waiting out a cold start.
+  const silent = !!opts.silent;
+
+  if (!isSheetConnected()) {
+    if (silent) return;
+    myLogList.innerHTML = "";
+    myLogStatus.hidden = false;
+    myLogStatus.textContent = "Sheet isn't connected yet.";
+    myLogStatus.className = "log-status err";
+    return;
+  }
+
+  const email = getAgentEmail();
+  if (!email) {
+    if (silent) return;
+    myLogList.innerHTML = "";
+    myLogStatus.hidden = false;
+    myLogStatus.textContent = "Sign in first to see your log.";
+    myLogStatus.className = "log-status err";
+    return;
+  }
+
+  // Cache hit for this agent: show it right away and refresh quietly in the
+  // background. A forced Refresh (or no cache yet) shows the full load state.
+  const usedCache = myLogCache && myLogCacheEmail === email && !opts.force;
+  if (!silent) {
+    if (usedCache) {
+      renderMyLog(myLogCache);
+      myLogStatus.hidden = false;
+      myLogStatus.textContent = "Refreshing\u2026";
+      myLogStatus.className = "log-status info";
+    } else {
+      myLogList.innerHTML = "";
+      myLogStatus.hidden = false;
+      myLogStatus.textContent = "Loading\u2026";
+      myLogStatus.className = "log-status info";
+    }
+  }
+
+  try {
+    // The server returns the log for the signed-in account only.
+    const data = await api("myLog", { limit: 50 });
+    const entries = data.entries || [];
+    myLogCache = entries;
+    myLogCacheEmail = email;
+    if (!silent) {
+      renderMyLog(entries);
+      myLogStatus.hidden = true;
+    }
+  } catch (err) {
+    if (silent) return; // background warm-up: fail quietly, retry on next ping
+    // If cached entries are already on screen, keep them and just note the
+    // refresh failed -- don't wipe good data back to an error message.
+    if (usedCache) {
+      myLogStatus.hidden = false;
+      myLogStatus.textContent = "Showing your last loaded log \u2014 couldn\u2019t refresh just now.";
+      myLogStatus.className = "log-status err";
+    } else {
+      myLogStatus.hidden = false;
+      myLogStatus.textContent = err && err.unauthorized
+        ? "Your sign-in expired. Sign in again to see your log."
+        : "Couldn\u2019t load your log. Check your connection and press Refresh.";
+      myLogStatus.className = "log-status err";
+    }
+  }
+}
+
+let myLogPreviouslyFocused = null;
+let detachMyLogKeyboard = null;
+
+function openMyLog() {
+  myLogPreviouslyFocused = document.activeElement;
+  myLogModal.hidden = false;
+  closeMyLogBtn.focus();
+  detachMyLogKeyboard = attachModalKeyboardHandling(myLogModal, closeMyLogModal);
+  fetchMyLog();
+}
+function closeMyLogModal() {
+  myLogModal.hidden = true;
+  if (detachMyLogKeyboard) {
+    detachMyLogKeyboard();
+    detachMyLogKeyboard = null;
+  }
+  if (myLogPreviouslyFocused && typeof myLogPreviouslyFocused.focus === "function") {
+    myLogPreviouslyFocused.focus();
+  }
+}
+
+myLogBtn.addEventListener("click", openMyLog);
+closeMyLogBtn.addEventListener("click", closeMyLogModal);
+refreshMyLogBtn.addEventListener("click", () => fetchMyLog({ force: true }));
+myLogModal.addEventListener("click", (e) => {
+  if (e.target === myLogModal) closeMyLogModal();
+});
+
+agentSignOutBtn.addEventListener("click", signOutAgent);
+
+refreshAgentsBtn.addEventListener("click", () => {
+  fetchActiveAgents();
+  fetchCompletedToday();
+});
+
+completedAgentFilter.addEventListener("change", applyCompletedFilter);
+
+// Team leads only (the server checks MANAGER_EMAILS). Entries are hidden from
+// the panel, not deleted, so the time data stays in the sheet for reporting.
+async function handleClearCompleted() {
+  const ok = await showConfirm(
+    "Clear today\u2019s Completed list for everyone? The entries and their times stay in the sheet.",
+    "Clear list",
+    "Cancel"
+  );
+  if (!ok) return;
+  clearCompletedBtn.disabled = true;
+  try {
+    await api("clearCompletedToday");
+    showStatus("Completed Today cleared.", "ok");
+    fetchCompletedToday();
+  } catch (err) {
+    showStatus(err && err.message ? err.message : "Couldn\u2019t clear the list. Try again.", "err", 5000);
+  } finally {
+    clearCompletedBtn.disabled = false;
+  }
+}
+
+clearCompletedBtn.addEventListener("click", handleClearCompleted);
+
+// Best-effort: let the sheet know right away if a tab closes mid-claim,
+// instead of waiting for the server-side stale timeout.
+window.addEventListener("beforeunload", () => {
+  if (!claimStarted || !navigator.sendBeacon || !currentAgent) return;
+  if (!isSheetConnected()) return;
+  try {
+    // No sessionId on purpose: the server treats an id-less end as a
+    // "tab closed" signal and ignores it if another tab is still heartbeating.
+    const blob = new Blob(
+      [JSON.stringify({ type: "sessionEnd", auth: currentAgent.token })],
+      { type: "text/plain;charset=utf-8" }
+    );
+    navigator.sendBeacon(WEB_APP_URL, blob);
+  } catch (err) {
+    // best-effort only
+  }
+});
+
+// When the app tab sits in the background, the browser throttles its timers:
+// a hidden tab's 20s heartbeat can slow to only once a minute (Chrome's
+// "intensive throttling" kicks in after ~5 min hidden). That gap can let the
+// server's stale-session timer evict an agent who's genuinely still working,
+// just heads-down in another tab. So the instant this tab becomes visible
+// again, re-announce presence, realign the heartbeat interval (so we're not
+// waiting on a throttled tick), and refresh the shared panel -- this makes the
+// session self-repair immediately on return instead of waiting for the next
+// (possibly throttled) heartbeat.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  // Polling pauses while the tab is hidden; catch up immediately on return.
+  fetchActiveAgents();
+  fetchCompletedToday();
+  flushOutbox();
+  if (!claimStarted) return;
+  postPresence("sessionHeartbeat", presencePayload());
+  startHeartbeat(); // clears the old (possibly throttled) interval, starts fresh
+});
+
+// ---------- Live clock (always Eastern time, regardless of the agent's
+// own device timezone -- uses the IANA zone so it follows the EST/EDT
+// daylight saving switch automatically, same reasoning as the backend). ----------
+const liveClockDate = document.getElementById("liveClockDate");
+const liveClockTime = document.getElementById("liveClockTime");
+
+function updateLiveClock() {
+  const now = new Date();
+  liveClockDate.textContent = now.toLocaleDateString("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+  liveClockTime.textContent = now.toLocaleTimeString("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+updateLiveClock();
+setInterval(updateLiveClock, 1000);
+
+init();
+</script>
+</body>
+</html>
