@@ -1290,16 +1290,19 @@ input:disabled, textarea:disabled, select:disabled {
 <script>
 
 // ---------- Hardcoded sheet connection ----------
-// Logs to: "Takahami Medical Billing -- Account Entries"
-// (https://docs.google.com/spreadsheets/d/13_GgCqU1Ey8PUj26AlHQWlrHlChw1uptL8dyO3Fh0bc)
+// Docket v2 -- logs to its OWN spreadsheet, separate from the v1 sheet.
 //
 // After deploying Apps_Script_Code.gs as a Web App (see README.md Part 1),
 // paste the resulting /exec URL below. Every agent using this page will log
 // to the same sheet -- no per-agent setup needed.
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx2UWHVh3w1EvZFdpIHv9F7PNJFGoeCEU__30ZmjskgbuUC8CipmN0Ny9w476wC6lgpUQ/exec";
+// Paste the /exec URL of the v2 Apps Script deployment here. Never point this
+// at the v1 URL: the v1 script doesn't understand v2's requests.
+const WEB_APP_URL = "https://script.google.com/a/macros/allianceglobalsolutions.com/s/AKfycbw5L8-jQSGII11uOIJYzTKvRnT8-en8JCp9_gddvi1l5BDh1QezJYMHH3kIRsZ9UrUWew/exec";
 
 // ---------- Constants ----------
-const DRAFT_KEY = "tpaCallLog.draftV1";
+// All v2 browser storage uses its own "docketV2." keys, so v1 and v2 can run
+// side by side (even on the same site) without sharing drafts or sign-ins.
+const DRAFT_KEY = "docketV2.draft";
 
 const ACTION_TEMPLATES = {
   nego_appeal:
@@ -1608,16 +1611,14 @@ const GOOGLE_CLIENT_ID = "519974257344-5u0bjm2sdctrnlq6b1oflsvesgn291fc.apps.goo
 // server enforces on every request.
 const ALLOWED_EMAIL_DOMAIN = "";
 
-// v2: the saved identity now carries the server-issued sign-in token. Older
-// saved identities (v1, no token) are ignored, so agents sign in once more.
-const AGENT_IDENTITY_KEY = "tpaCallLog.agentIdentityV2";
-const LEGACY_AGENT_IDENTITY_KEY = "tpaCallLog.agentIdentityV1";
+// The saved identity carries the server-issued sign-in token.
+const AGENT_IDENTITY_KEY = "docketV2.agentIdentity";
 let currentAgent = null; // { name, email, picture, token, tokenExpiresAt, isManager }
 
 // Finished claims waiting to be confirmed by the sheet. Kept in localStorage
 // so a dropped connection, a slow Apps Script, or a closed tab never loses a
 // claim or its measured time; retried automatically until the sheet confirms.
-const OUTBOX_KEY = "docket.outboxV1";
+const OUTBOX_KEY = "docketV2.outbox";
 const OUTBOX_RETRY_MS = 30000;
 const REQUEST_TIMEOUT_MS = 45000; // Apps Script cold starts can take ~15s
 
@@ -1840,7 +1841,7 @@ async function handleGoogleCredential(response) {
 
 function initGoogleSignIn() {
   if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com") {
-    showGateError("Google Sign-In isn't set up yet \u2014 add your Client ID in index.html (see README.md).");
+    showGateError("Google Sign-In isn't set up yet \u2014 add your Client ID in index.html.");
     return;
   }
   if (!window.google || !google.accounts || !google.accounts.id) {
@@ -2111,7 +2112,6 @@ applyTheme(getCurrentTheme());
 
 // ---------- Init ----------
 function init() {
-  storageSet(LEGACY_AGENT_IDENTITY_KEY, null); // pre-v2 identity had no token
   const savedAgent = storageGet(AGENT_IDENTITY_KEY);
   if (savedAgent && savedAgent.token && savedAgent.tokenExpiresAt > Date.now()) {
     currentAgent = savedAgent;
