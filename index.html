@@ -1652,11 +1652,27 @@ async function api(type, body, opts) {
       body: JSON.stringify(payload),
       signal: controller.signal
     });
+  } catch (err) {
+    // The browser blocks the response when Apps Script answers with a Google
+    // login or error page instead of Docket's JSON -- usually a deployment
+    // setting -- or when the agent is offline. Say so instead of "Failed to fetch".
+    throw new Error(
+      err && err.name === "AbortError"
+        ? "The Docket sheet took too long to respond. Try again in a moment."
+        : navigator.onLine === false
+          ? "You're offline. Check your connection and try again."
+          : "Couldn\u2019t reach the Docket sheet. If this keeps happening, ask your admin to check the Apps Script deployment."
+    );
   } finally {
     clearTimeout(timer);
   }
-  if (!res.ok) throw new Error("The sheet responded with HTTP " + res.status + ".");
-  const data = await res.json();
+  if (!res.ok) throw new Error("The Docket sheet responded with an error (HTTP " + res.status + ").");
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    throw new Error("The Docket sheet sent back something unexpected. Ask your admin to check the Apps Script deployment.");
+  }
   if (data && data.status === "unauthorized") {
     handleUnauthorized();
     const e = new Error(data.message || "Please sign in again.");
@@ -2620,7 +2636,14 @@ function isCmdBlockEmpty(block) {
   // Date is auto-filled to today when a block is created, so it doesn't
   // count as "the agent entered something" on its own -- otherwise a block
   // added by accident and left untouched would still get logged.
-  return CMD_FIELD_KEYS.filter((key) => key !== "cmdDate").every((key) => !block.els[key].value.trim());
+  // Same for Carrier when it only holds the value auto-filled from
+  // Patient / Claim Info.
+  const headerCarrier = els.carrierTop.value.trim();
+  return CMD_FIELD_KEYS.filter((key) => key !== "cmdDate").every((key) => {
+    const value = block.els[key].value.trim();
+    if (key === "cmdCarrier" && value === headerCarrier) return true;
+    return !value;
+  });
 }
 
 addCmdBlockBtn.addEventListener("click", () => {
